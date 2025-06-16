@@ -14,7 +14,9 @@ This is a CucumberStudio MCP (Model Context Protocol) project. MCP servers provi
 - `npm start` - Run the built server
 - `npm run lint` - Run ESLint
 - `npm run typecheck` - Run TypeScript type checking
-- `npm test` - Run tests
+- `npm test` - Run tests once
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
 
 ### Docker Commands
 - `npm run docker:build` - Build production Docker image
