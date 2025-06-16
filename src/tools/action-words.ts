@@ -1,28 +1,25 @@
+import { Tool, CallToolRequest, CallToolResult, TextContent } from '@modelcontextprotocol/sdk/types.js'
+import { CucumberStudioApiClient } from '../api/client.js'
+import { safeExecute } from '../utils/errors.js'
 import {
-  Tool,
-  CallToolRequest,
-  CallToolResult,
-  TextContent,
-} from '@modelcontextprotocol/sdk/types.js';
-import { CucumberStudioApiClient } from '../api/client.js';
-import { safeExecute } from '../utils/errors.js';
-import { 
-  validateInput, 
-  ProjectIdSchema, 
-  ActionWordIdSchema, 
-  ListParamsSchema, 
-  convertToApiParams 
-} from '../utils/validation.js';
-import { z } from 'zod';
+  validateInput,
+  ProjectIdSchema,
+  ActionWordIdSchema,
+  ListParamsSchema,
+  convertToApiParams,
+} from '../utils/validation.js'
+import { z } from 'zod'
 
 const FindActionWordsByTagsSchema = z.object({
   projectId: ProjectIdSchema,
   tags: z.string().min(1, 'Tags parameter is required'),
-  pagination: z.object({
-    page: z.number().int().min(1).optional(),
-    pageSize: z.number().int().min(1).max(100).optional(),
-  }).optional(),
-});
+  pagination: z
+    .object({
+      page: z.number().int().min(1).optional(),
+      pageSize: z.number().int().min(1).max(100).optional(),
+    })
+    .optional(),
+})
 
 export class ActionWordTools {
   constructor(private apiClient: CucumberStudioApiClient) {}
@@ -94,7 +91,7 @@ export class ActionWordTools {
           additionalProperties: false,
         },
       },
-    ];
+    ]
   }
 
   /**
@@ -103,28 +100,28 @@ export class ActionWordTools {
   async handleToolCall(request: CallToolRequest): Promise<CallToolResult> {
     switch (request.params.name) {
       case 'cucumberstudio_list_action_words':
-        return this.listActionWords(request.params.arguments);
+        return this.listActionWords(request.params.arguments)
 
       case 'cucumberstudio_get_action_word':
-        return this.getActionWord(request.params.arguments);
+        return this.getActionWord(request.params.arguments)
 
       case 'cucumberstudio_find_action_words_by_tags':
-        return this.findActionWordsByTags(request.params.arguments);
+        return this.findActionWordsByTags(request.params.arguments)
 
       default:
-        throw new Error(`Unknown tool: ${request.params.name}`);
+        throw new Error(`Unknown tool: ${request.params.name}`)
     }
   }
 
   private async listActionWords(args: any): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'list_action_words');
-      const listParams = validateInput(ListParamsSchema, args, 'list_action_words');
-      const apiParams = convertToApiParams(listParams);
-      
-      const response = await this.apiClient.getActionWords(projectId, apiParams);
-      
-      const actionWords = Array.isArray(response.data) ? response.data : [response.data];
+      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'list_action_words')
+      const listParams = validateInput(ListParamsSchema, args, 'list_action_words')
+      const apiParams = convertToApiParams(listParams)
+
+      const response = await this.apiClient.getActionWords(projectId, apiParams)
+
+      const actionWords = Array.isArray(response.data) ? response.data : [response.data]
       const actionWordList = actionWords.map((actionWord: any) => ({
         id: actionWord.id,
         name: actionWord.attributes?.name || 'Unknown',
@@ -132,31 +129,35 @@ export class ActionWordTools {
         definition: actionWord.attributes?.definition || '',
         created_at: actionWord.attributes?.created_at,
         updated_at: actionWord.attributes?.updated_at,
-      }));
+      }))
 
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify({
-              action_words: actionWordList,
-              meta: response.meta || {},
-              total_count: actionWordList.length,
-            }, null, 2),
+            text: JSON.stringify(
+              {
+                action_words: actionWordList,
+                meta: response.meta || {},
+                total_count: actionWordList.length,
+              },
+              null,
+              2,
+            ),
           } as TextContent,
         ],
-      };
-    }, 'listing action words');
+      }
+    }, 'listing action words')
   }
 
   private async getActionWord(args: any): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_action_word');
-      const actionWordId = validateInput(ActionWordIdSchema, args?.actionWordId, 'get_action_word');
-      
-      const response = await this.apiClient.getActionWord(projectId, actionWordId);
-      
-      const actionWord = response.data;
+      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_action_word')
+      const actionWordId = validateInput(ActionWordIdSchema, args?.actionWordId, 'get_action_word')
+
+      const response = await this.apiClient.getActionWord(projectId, actionWordId)
+
+      const actionWord = response.data
       const actionWordDetails = {
         id: actionWord.id,
         type: actionWord.type,
@@ -166,30 +167,38 @@ export class ActionWordTools {
         created_at: actionWord.attributes?.created_at,
         updated_at: actionWord.attributes?.updated_at,
         relationships: actionWord.relationships || {},
-      };
+      }
 
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify({
-              action_word: actionWordDetails,
-              included: response.included || [],
-            }, null, 2),
+            text: JSON.stringify(
+              {
+                action_word: actionWordDetails,
+                included: response.included || [],
+              },
+              null,
+              2,
+            ),
           } as TextContent,
         ],
-      };
-    }, 'getting action word details');
+      }
+    }, 'getting action word details')
   }
 
   private async findActionWordsByTags(args: any): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const { projectId, tags, pagination } = validateInput(FindActionWordsByTagsSchema, args, 'find_action_words_by_tags');
-      const apiParams = convertToApiParams({ pagination });
-      
-      const response = await this.apiClient.findActionWordsByTag(projectId, tags, apiParams);
-      
-      const actionWords = Array.isArray(response.data) ? response.data : [response.data];
+      const { projectId, tags, pagination } = validateInput(
+        FindActionWordsByTagsSchema,
+        args,
+        'find_action_words_by_tags',
+      )
+      const apiParams = convertToApiParams({ pagination })
+
+      const response = await this.apiClient.findActionWordsByTag(projectId, tags, apiParams)
+
+      const actionWords = Array.isArray(response.data) ? response.data : [response.data]
       const actionWordList = actionWords.map((actionWord: any) => ({
         id: actionWord.id,
         name: actionWord.attributes?.name || 'Unknown',
@@ -197,21 +206,25 @@ export class ActionWordTools {
         definition: actionWord.attributes?.definition || '',
         created_at: actionWord.attributes?.created_at,
         updated_at: actionWord.attributes?.updated_at,
-      }));
+      }))
 
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify({
-              action_words: actionWordList,
-              search_tags: tags,
-              meta: response.meta || {},
-              total_count: actionWordList.length,
-            }, null, 2),
+            text: JSON.stringify(
+              {
+                action_words: actionWordList,
+                search_tags: tags,
+                meta: response.meta || {},
+                total_count: actionWordList.length,
+              },
+              null,
+              2,
+            ),
           } as TextContent,
         ],
-      };
-    }, 'finding action words by tags');
+      }
+    }, 'finding action words by tags')
   }
 }

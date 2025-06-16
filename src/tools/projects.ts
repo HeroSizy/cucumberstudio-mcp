@@ -1,12 +1,7 @@
-import {
-  Tool,
-  CallToolRequest,
-  CallToolResult,
-  TextContent,
-} from '@modelcontextprotocol/sdk/types.js';
-import { CucumberStudioApiClient } from '../api/client.js';
-import { safeExecute } from '../utils/errors.js';
-import { validateInput, ProjectIdSchema, ListParamsSchema, convertToApiParams } from '../utils/validation.js';
+import { Tool, CallToolRequest, CallToolResult, TextContent } from '@modelcontextprotocol/sdk/types.js'
+import { CucumberStudioApiClient } from '../api/client.js'
+import { safeExecute } from '../utils/errors.js'
+import { validateInput, ProjectIdSchema, ListParamsSchema, convertToApiParams } from '../utils/validation.js'
 
 export class ProjectTools {
   constructor(private apiClient: CucumberStudioApiClient) {}
@@ -53,7 +48,7 @@ export class ProjectTools {
           additionalProperties: false,
         },
       },
-    ];
+    ]
   }
 
   /**
@@ -62,54 +57,58 @@ export class ProjectTools {
   async handleToolCall(request: CallToolRequest): Promise<CallToolResult> {
     switch (request.params.name) {
       case 'cucumberstudio_list_projects':
-        return this.listProjects(request.params.arguments);
+        return this.listProjects(request.params.arguments)
 
       case 'cucumberstudio_get_project':
-        return this.getProject(request.params.arguments);
+        return this.getProject(request.params.arguments)
 
       default:
-        throw new Error(`Unknown tool: ${request.params.name}`);
+        throw new Error(`Unknown tool: ${request.params.name}`)
     }
   }
 
   private async listProjects(args: any): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const params = validateInput(ListParamsSchema, args, 'list_projects');
-      const apiParams = convertToApiParams(params);
-      
-      const response = await this.apiClient.getProjects(apiParams);
-      
-      const projects = Array.isArray(response.data) ? response.data : [response.data];
+      const params = validateInput(ListParamsSchema, args, 'list_projects')
+      const apiParams = convertToApiParams(params)
+
+      const response = await this.apiClient.getProjects(apiParams)
+
+      const projects = Array.isArray(response.data) ? response.data : [response.data]
       const projectList = projects.map((project: any) => ({
         id: project.id,
         name: project.attributes?.name || 'Unknown',
         description: project.attributes?.description || '',
         created_at: project.attributes?.created_at,
         updated_at: project.attributes?.updated_at,
-      }));
+      }))
 
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify({
-              projects: projectList,
-              meta: response.meta || {},
-              total_count: projectList.length,
-            }, null, 2),
+            text: JSON.stringify(
+              {
+                projects: projectList,
+                meta: response.meta || {},
+                total_count: projectList.length,
+              },
+              null,
+              2,
+            ),
           } as TextContent,
         ],
-      };
-    }, 'listing projects');
+      }
+    }, 'listing projects')
   }
 
   private async getProject(args: any): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_project');
-      
-      const response = await this.apiClient.getProject(projectId);
-      
-      const project = response.data;
+      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_project')
+
+      const response = await this.apiClient.getProject(projectId)
+
+      const project = response.data
       const projectDetails = {
         id: project.id,
         type: project.type,
@@ -118,19 +117,23 @@ export class ProjectTools {
         created_at: project.attributes?.created_at,
         updated_at: project.attributes?.updated_at,
         relationships: project.relationships || {},
-      };
+      }
 
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify({
-              project: projectDetails,
-              included: response.included || [],
-            }, null, 2),
+            text: JSON.stringify(
+              {
+                project: projectDetails,
+                included: response.included || [],
+              },
+              null,
+              2,
+            ),
           } as TextContent,
         ],
-      };
-    }, 'getting project details');
+      }
+    }, 'getting project details')
   }
 }
