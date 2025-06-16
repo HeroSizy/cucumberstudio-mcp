@@ -25,12 +25,21 @@ This is a CucumberStudio MCP (Model Context Protocol) project. MCP servers provi
 - `npm run docker:compose:up:dev` - Start development environment
 - `npm run docker:compose:down` - Stop docker-compose services
 
+### Transport Options
+- **STDIO** (default): `npm start` or `MCP_TRANSPORT=stdio npm start`
+- **HTTP/Streamable HTTP**: `npm run start:http` or `MCP_TRANSPORT=http npm start`
+- **Development HTTP**: `npm run dev:http` or `MCP_TRANSPORT=http npm run dev`
+
 ## Architecture
 
 The MCP server is built with TypeScript and follows a modular architecture:
 
-- **Entry Point**: `src/index.ts` - Main MCP server setup and initialization
+- **Entry Point**: `src/index.ts` - Main MCP server setup and transport selection
 - **Configuration**: `src/config/settings.ts` - Environment-based configuration management
+- **Transports**: `src/transports/` - Transport layer implementations
+  - `stdio.ts` - Standard input/output transport (default)
+  - `http.ts` - Streamable HTTP transport with session management
+  - `index.ts` - Transport exports and types
 - **API Client**: `src/api/client.ts` - Cucumber Studio API client with authentication
 - **Tool Modules**: `src/tools/` - MCP tool implementations organized by feature
   - `projects.ts` - Project management tools
@@ -57,9 +66,14 @@ The MCP server is built with TypeScript and follows a modular architecture:
 
 ```
 src/
-├── index.ts              # MCP server entry point
+├── index.ts              # Main entry point with transport selection
+├── server.ts             # MCP server class and tool handler setup
 ├── config/
 │   └── settings.ts       # Configuration management with Zod validation
+├── transports/
+│   ├── index.ts          # Transport exports and types
+│   ├── stdio.ts          # Standard input/output transport
+│   └── http.ts           # Streamable HTTP transport with session management
 ├── api/
 │   ├── client.ts         # Cucumber Studio API client with authentication
 │   └── types.ts          # TypeScript types for API responses
@@ -103,3 +117,9 @@ Copy `.env.example` to `.env` and configure your Cucumber Studio API credentials
 - `CUCUMBER_STUDIO_ACCESS_TOKEN` - Your API access token
 - `CUCUMBER_STUDIO_CLIENT_ID` - Your client ID  
 - `CUCUMBER_STUDIO_UID` - Your user ID
+
+### Transport Configuration
+- `MCP_TRANSPORT` - Transport type: `stdio` (default), `http`, or `streamable-http`
+- `MCP_PORT` - HTTP transport port (default: 3000)
+- `MCP_HOST` - HTTP transport host (default: 127.0.0.1)
+- `MCP_CORS_ORIGIN` - CORS origin setting (default: true)

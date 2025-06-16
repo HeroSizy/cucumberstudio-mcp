@@ -24,7 +24,7 @@ RUN adduser -S mcpserver -u 1001
 RUN chown -R mcpserver:nodejs /app
 USER mcpserver
 
-# Expose port (if needed for health checks)
+# Expose port for HTTP transport
 EXPOSE 3000
 
 # Health check

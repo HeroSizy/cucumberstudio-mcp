@@ -11,6 +11,9 @@ const ConfigSchema = z.object({
   server: z.object({
     name: z.string().default('cucumberstudio-mcp'),
     version: z.string().default('1.0.0'),
+    transport: z.enum(['stdio', 'http', 'streamable-http']).default('stdio'),
+    port: z.number().int().min(1).max(65535).default(3000),
+    host: z.string().default('127.0.0.1'),
   }),
 });
 
@@ -33,6 +36,9 @@ export class ConfigManager {
       server: {
         name: process.env.MCP_SERVER_NAME,
         version: process.env.MCP_SERVER_VERSION,
+        transport: process.env.MCP_TRANSPORT,
+        port: process.env.MCP_PORT ? parseInt(process.env.MCP_PORT, 10) : undefined,
+        host: process.env.MCP_HOST,
       },
     };
 

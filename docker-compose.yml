@@ -8,15 +8,35 @@ services:
       - CUCUMBER_STUDIO_CLIENT_ID=${CUCUMBER_STUDIO_CLIENT_ID}
       - CUCUMBER_STUDIO_UID=${CUCUMBER_STUDIO_UID}
       - CUCUMBER_STUDIO_BASE_URL=${CUCUMBER_STUDIO_BASE_URL:-https://studio-api.cucumberstudio.com}
+      - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
       - NODE_ENV=production
     restart: unless-stopped
     volumes:
       # Mount local .env file if it exists
       - ./.env:/app/.env:ro
-    # For MCP servers, we typically don't expose ports as they communicate via stdio
-    # But we can expose for health checks or debugging
-    # ports:
-    #   - "3000:3000"
+    # Expose port only for HTTP transport
+    ports:
+      - "${MCP_PORT:-3000}:3000"
+    
+  # HTTP-only service
+  cucumberstudio-mcp-http:
+    build: .
+    environment:
+      - CUCUMBER_STUDIO_ACCESS_TOKEN=${CUCUMBER_STUDIO_ACCESS_TOKEN}
+      - CUCUMBER_STUDIO_CLIENT_ID=${CUCUMBER_STUDIO_CLIENT_ID}
+      - CUCUMBER_STUDIO_UID=${CUCUMBER_STUDIO_UID}
+      - CUCUMBER_STUDIO_BASE_URL=${CUCUMBER_STUDIO_BASE_URL:-https://studio-api.cucumberstudio.com}
+      - MCP_TRANSPORT=http
+      - MCP_PORT=3000
+      - MCP_HOST=0.0.0.0
+      - NODE_ENV=production
+    restart: unless-stopped
+    volumes:
+      - ./.env:/app/.env:ro
+    ports:
+      - "${MCP_PORT:-3000}:3000"
+    profiles:
+      - http
     
   # Development service
   cucumberstudio-mcp-dev:
@@ -28,6 +48,7 @@ services:
       - CUCUMBER_STUDIO_CLIENT_ID=${CUCUMBER_STUDIO_CLIENT_ID}
       - CUCUMBER_STUDIO_UID=${CUCUMBER_STUDIO_UID}
       - CUCUMBER_STUDIO_BASE_URL=${CUCUMBER_STUDIO_BASE_URL:-https://studio-api.cucumberstudio.com}
+      - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
       - NODE_ENV=development
     volumes:
       - ./src:/app/src:ro
