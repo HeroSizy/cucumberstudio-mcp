@@ -4,12 +4,14 @@ A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studi
 
 ## Features
 
+- **Dual Transport Support** - STDIO and Streamable HTTP transports
 - **Project Management** - List and retrieve project details
 - **Scenario Access** - Browse test scenarios and search by tags
 - **Action Words** - Access reusable test steps and definitions
 - **Test Execution** - View test runs, executions, and build information
 - **Comprehensive Error Handling** - Robust error handling with detailed feedback
 - **Type Safety** - Full TypeScript implementation with Zod validation
+- **Comprehensive Testing** - Near 100% test coverage with Vitest
 
 ## Installation
 
@@ -84,15 +86,32 @@ The server requires Cucumber Studio API credentials. Get these from your Cucumbe
 
 ## Usage
 
-### Development Mode
-```bash
-npm run dev
-```
+### Transport Options
 
-### Production Mode
+The server supports both STDIO and HTTP transports:
+
+#### STDIO Transport (Default)
 ```bash
+# Development
+npm run dev
+
+# Production
 npm start
 ```
+
+#### HTTP Transport
+```bash
+# Development
+npm run dev:http
+
+# Production
+npm run start:http
+```
+
+#### Environment Variables
+- `MCP_TRANSPORT` - Transport type: `stdio` (default), `http`, or `streamable-http`
+- `MCP_PORT` - HTTP transport port (default: 3000)
+- `MCP_HOST` - HTTP transport host (default: 127.0.0.1)
 
 ### Using with Claude Desktop
 
@@ -168,6 +187,15 @@ npm run lint
 
 # Build for production
 npm run build
+
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
 ```
 
 ## Architecture
@@ -175,17 +203,44 @@ npm run build
 The server is built with a modular architecture:
 
 - **TypeScript** - Full type safety throughout
+- **Dual Transports** - STDIO for local use, HTTP for remote access
 - **Zod** - Runtime validation for API inputs and configuration
 - **Axios** - HTTP client with comprehensive error handling
 - **MCP SDK** - Official Model Context Protocol implementation
+- **Express** - HTTP server with CORS and security middleware
+- **Vitest** - Modern testing framework with comprehensive coverage
+
+## Testing
+
+The project includes comprehensive test coverage:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests in watch mode (for development)
+npm run test:watch
+```
+
+Test coverage includes:
+- Unit tests for all modules
+- Integration tests for the MCP server
+- Transport layer testing
+- API client mocking and testing
+- Configuration validation
+- Error handling scenarios
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+4. Add tests for new functionality
+5. Ensure all tests pass: `npm test`
+6. Submit a pull request
 
 ## License
 
