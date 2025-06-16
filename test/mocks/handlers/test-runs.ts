@@ -13,9 +13,9 @@ const BASE_URL = 'https://api.example.com'
 export const testRunHandlers = [
   // List test runs in a project
   http.get(`${BASE_URL}/projects/:projectId/test_runs`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -27,9 +27,9 @@ export const testRunHandlers = [
 
   // Get specific test run
   http.get(`${BASE_URL}/projects/:projectId/test_runs/:id`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -45,9 +45,9 @@ export const testRunHandlers = [
 
   // Get test executions for a test run
   http.get(`${BASE_URL}/projects/:projectId/test_runs/:testRunId/test_snapshots`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -59,9 +59,9 @@ export const testRunHandlers = [
 
   // List builds in a project
   http.get(`${BASE_URL}/projects/:projectId/builds`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -73,9 +73,9 @@ export const testRunHandlers = [
 
   // Get specific build
   http.get(`${BASE_URL}/projects/:projectId/builds/:id`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -91,9 +91,9 @@ export const testRunHandlers = [
 
   // List execution environments
   http.get(`${BASE_URL}/projects/:projectId/execution_environments`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

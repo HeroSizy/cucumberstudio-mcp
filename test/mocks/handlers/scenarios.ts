@@ -6,9 +6,9 @@ const BASE_URL = 'https://api.example.com'
 export const scenarioHandlers = [
   // List scenarios in a project
   http.get(`${BASE_URL}/projects/:projectId/scenarios`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -39,9 +39,9 @@ export const scenarioHandlers = [
 
   // Get specific scenario
   http.get(`${BASE_URL}/projects/:projectId/scenarios/:id`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -57,9 +57,9 @@ export const scenarioHandlers = [
 
   // List folders in a project
   http.get(`${BASE_URL}/projects/:projectId/folders`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

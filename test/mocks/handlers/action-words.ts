@@ -6,9 +6,9 @@ const BASE_URL = 'https://api.example.com'
 export const actionWordHandlers = [
   // List action words in a project
   http.get(`${BASE_URL}/projects/:projectId/actionwords`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -33,9 +33,9 @@ export const actionWordHandlers = [
 
   // Get specific action word
   http.get(`${BASE_URL}/projects/:projectId/actionwords/:id`, ({ params, request }) => {
-    const authHeader = request.headers.get('authorization')
+    const accessToken = request.headers.get('access-token')
     
-    if (!authHeader || !authHeader.includes('Bearer')) {
+    if (!accessToken || accessToken !== 'token') {
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
