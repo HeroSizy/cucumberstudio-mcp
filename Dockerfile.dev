@@ -1,0 +1,31 @@
+# Development Dockerfile with hot reload
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install global dependencies for development
+RUN npm install -g tsx nodemon
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S mcpserver -u 1001
+
+# Change ownership of the app directory
+RUN chown -R mcpserver:nodejs /app
+USER mcpserver
+
+# Expose port for development/debugging
+EXPOSE 3000
+
+# Development command with hot reload
+CMD ["npm", "run", "dev"]

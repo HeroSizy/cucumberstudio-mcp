@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  cucumberstudio-mcp:
+    build: .
+    environment:
+      - CUCUMBER_STUDIO_ACCESS_TOKEN=${CUCUMBER_STUDIO_ACCESS_TOKEN}
+      - CUCUMBER_STUDIO_CLIENT_ID=${CUCUMBER_STUDIO_CLIENT_ID}
+      - CUCUMBER_STUDIO_UID=${CUCUMBER_STUDIO_UID}
+      - CUCUMBER_STUDIO_BASE_URL=${CUCUMBER_STUDIO_BASE_URL:-https://studio-api.cucumberstudio.com}
+      - NODE_ENV=production
+    restart: unless-stopped
+    volumes:
+      # Mount local .env file if it exists
+      - ./.env:/app/.env:ro
+    # For MCP servers, we typically don't expose ports as they communicate via stdio
+    # But we can expose for health checks or debugging
+    # ports:
+    #   - "3000:3000"
+    
+  # Development service
+  cucumberstudio-mcp-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      - CUCUMBER_STUDIO_ACCESS_TOKEN=${CUCUMBER_STUDIO_ACCESS_TOKEN}
+      - CUCUMBER_STUDIO_CLIENT_ID=${CUCUMBER_STUDIO_CLIENT_ID}
+      - CUCUMBER_STUDIO_UID=${CUCUMBER_STUDIO_UID}
+      - CUCUMBER_STUDIO_BASE_URL=${CUCUMBER_STUDIO_BASE_URL:-https://studio-api.cucumberstudio.com}
+      - NODE_ENV=development
+    volumes:
+      - ./src:/app/src:ro
+      - ./package.json:/app/package.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./.env:/app/.env:ro
+    profiles:
+      - dev

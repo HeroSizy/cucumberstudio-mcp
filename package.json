@@ -10,7 +10,15 @@
     "dev": "tsx src/index.ts",
     "test": "jest",
     "lint": "eslint src --ext .ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "docker:build": "docker build -t cucumberstudio-mcp .",
+    "docker:build:dev": "docker build -f Dockerfile.dev -t cucumberstudio-mcp:dev .",
+    "docker:run": "docker run --env-file .env cucumberstudio-mcp",
+    "docker:run:dev": "docker run --env-file .env -v $(pwd)/src:/app/src cucumberstudio-mcp:dev",
+    "docker:compose:up": "docker-compose up",
+    "docker:compose:up:dev": "docker-compose --profile dev up cucumberstudio-mcp-dev",
+    "docker:compose:down": "docker-compose down",
+    "docker:compose:build": "docker-compose build"
   },
   "keywords": ["mcp", "cucumber", "testing", "api"],
   "author": "",

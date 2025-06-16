@@ -16,6 +16,15 @@ This is a CucumberStudio MCP (Model Context Protocol) project. MCP servers provi
 - `npm run typecheck` - Run TypeScript type checking
 - `npm test` - Run tests
 
+### Docker Commands
+- `npm run docker:build` - Build production Docker image
+- `npm run docker:build:dev` - Build development Docker image
+- `npm run docker:run` - Run production container
+- `npm run docker:run:dev` - Run development container with hot reload
+- `npm run docker:compose:up` - Start with docker-compose
+- `npm run docker:compose:up:dev` - Start development environment
+- `npm run docker:compose:down` - Stop docker-compose services
+
 ## Architecture
 
 The MCP server is built with TypeScript and follows a modular architecture:

@@ -35,6 +35,45 @@ cp .env.example .env
 npm run build
 ```
 
+## Docker Support
+
+### Using Docker Compose (Recommended)
+
+1. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your Cucumber Studio API credentials
+```
+
+2. Run with Docker Compose:
+```bash
+# Production
+docker-compose up
+
+# Development with hot reload
+docker-compose --profile dev up cucumberstudio-mcp-dev
+```
+
+### Using Docker directly
+
+1. Build the image:
+```bash
+# Production
+npm run docker:build
+
+# Development
+npm run docker:build:dev
+```
+
+2. Run the container:
+```bash
+# Production
+npm run docker:run
+
+# Development with hot reload
+npm run docker:run:dev
+```
+
 ## Configuration
 
 The server requires Cucumber Studio API credentials. Get these from your Cucumber Studio account settings:
@@ -70,6 +109,19 @@ Add this to your Claude Desktop configuration:
         "CUCUMBER_STUDIO_CLIENT_ID": "your_client_id",
         "CUCUMBER_STUDIO_UID": "your_uid"
       }
+    }
+  }
+}
+```
+
+### Using with Docker in Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "cucumberstudio": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "--env-file", "/path/to/.env", "cucumberstudio-mcp"]
     }
   }
 }
