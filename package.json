@@ -1,6 +1,6 @@
 {
   "name": "cucumberstudio-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "MCP server for Cucumber Studio API integration",
   "main": "build/index.js",
   "type": "module",
