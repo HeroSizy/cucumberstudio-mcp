@@ -1,10 +1,11 @@
 import { randomUUID } from 'crypto'
+import { Server as HttpServer } from 'http'
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js'
 import cors from 'cors'
-import express from 'express'
+import express, { Express } from 'express'
 
 import { Logger } from '../utils/logger.js'
 
@@ -30,13 +31,13 @@ export interface HttpTransportOptions {
  * Creates an HTTP server using MCP's official Streamable HTTP transport
  */
 export class StreamableHttpTransport {
-  private app: express.Application
-  private httpServer: any
+  private app: Express
+  private httpServer: HttpServer | null = null
   private transports = new Map<string, StreamableHTTPServerTransport>()
-  private createMcpServer: () => Server
+  private createMcpServer: () => McpServer
 
   constructor(
-    createMcpServer: () => Server,
+    createMcpServer: () => McpServer,
     private options: HttpTransportOptions,
     private logger: Logger
   ) {
@@ -70,9 +71,9 @@ export class StreamableHttpTransport {
         
         // Log response body for errors or when explicitly requested
         if (res.statusCode >= 400) {
-          logger.error( `[${requestId}] Error response body`, 
-            typeof body === 'string' ? body : JSON.stringify(body, null, 2)
-          )
+          logger.error( `[${requestId}] Error response body`, {
+            body: typeof body === 'string' ? body : JSON.stringify(body, null, 2)
+          })
         }
         
         return originalSend.call(this, body)
@@ -422,7 +423,7 @@ export class StreamableHttpTransport {
           },
         )
 
-        this.httpServer.on('error', (error: Error) => {
+        this.httpServer?.on('error', (error: Error) => {
           reject(error)
         })
       } catch (error) {
@@ -442,7 +443,7 @@ export class StreamableHttpTransport {
 
     return new Promise((resolve) => {
       if (this.httpServer) {
-        this.httpServer.close(() => {
+        this.httpServer?.close(() => {
           this.logger.info('Streamable HTTP transport closed')
           resolve()
         })

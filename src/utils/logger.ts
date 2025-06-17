@@ -1,11 +1,11 @@
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace'
 
 export interface Logger {
-  error(message: string, meta?: any): void
-  warn(message: string, meta?: any): void
-  info(message: string, meta?: any): void
-  debug(message: string, meta?: any): void
-  trace(message: string, meta?: any): void
+  error(message: string, meta?: Record<string, unknown>): void
+  warn(message: string, meta?: Record<string, unknown>): void
+  info(message: string, meta?: Record<string, unknown>): void
+  debug(message: string, meta?: Record<string, unknown>): void
+  trace(message: string, meta?: Record<string, unknown>): void
 }
 
 export interface LoggerConfig {
@@ -63,7 +63,7 @@ export class StderrLogger implements Logger {
     return LOG_LEVELS[level] <= LOG_LEVELS[this.config.level]
   }
 
-  private formatMessage(level: LogLevel, message: string, meta?: any): string {
+  private formatMessage(level: LogLevel, message: string, meta?: Record<string, unknown>): string {
     let formatted = ''
 
     // Add timestamp if enabled
@@ -99,30 +99,30 @@ export class StderrLogger implements Logger {
     return formatted
   }
 
-  private writeLog(level: LogLevel, message: string, meta?: any): void {
+  private writeLog(level: LogLevel, message: string, meta?: Record<string, unknown>): void {
     if (!this.shouldLog(level)) return
     
     const formatted = this.formatMessage(level, message, meta)
     console.error(formatted)
   }
 
-  error(message: string, meta?: any): void {
+  error(message: string, meta?: Record<string, unknown>): void {
     this.writeLog('error', message, meta)
   }
 
-  warn(message: string, meta?: any): void {
+  warn(message: string, meta?: Record<string, unknown>): void {
     this.writeLog('warn', message, meta)
   }
 
-  info(message: string, meta?: any): void {
+  info(message: string, meta?: Record<string, unknown>): void {
     this.writeLog('info', message, meta)
   }
 
-  debug(message: string, meta?: any): void {
+  debug(message: string, meta?: Record<string, unknown>): void {
     this.writeLog('debug', message, meta)
   }
 
-  trace(message: string, meta?: any): void {
+  trace(message: string, meta?: Record<string, unknown>): void {
     this.writeLog('trace', message, meta)
   }
 }

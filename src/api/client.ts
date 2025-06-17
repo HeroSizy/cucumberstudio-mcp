@@ -123,7 +123,7 @@ export class CucumberStudioApiClient {
   /**
    * Sanitize headers to avoid logging sensitive information
    */
-  private sanitizeHeaders(headers: any): any {
+  private sanitizeHeaders(headers: Record<string, unknown>): Record<string, unknown> {
     if (!headers) return headers
     
     const sanitized = { ...headers }
@@ -141,7 +141,7 @@ export class CucumberStudioApiClient {
   /**
    * Generic GET request handler
    */
-  private async get<T>(endpoint: string, params?: Record<string, any>): Promise<CucumberStudioResponse<T>> {
+  private async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<CucumberStudioResponse<T>> {
     const response: AxiosResponse<CucumberStudioResponse<T>> = await this.client.get(endpoint, { params })
     return response.data
   }

@@ -39,10 +39,10 @@ export const ListParamsSchema = z
 export function convertToApiParams(params?: {
   pagination?: { page?: number; pageSize?: number }
   filter?: { name?: string; tags?: string }
-}): Record<string, any> {
+}): Record<string, unknown> {
   if (!params) return {}
 
-  const apiParams: Record<string, any> = {}
+  const apiParams: Record<string, unknown> = {}
 
   if (params.pagination?.page) {
     apiParams['page[number]'] = params.pagination.page

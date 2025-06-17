@@ -1,6 +1,7 @@
 import { Tool, CallToolRequest, CallToolResult, TextContent } from '@modelcontextprotocol/sdk/types.js'
 
 import { CucumberStudioApiClient } from '../api/client.js'
+import { Project } from '../api/types.js'
 import { safeExecute } from '../utils/errors.js'
 import { validateInput, ProjectIdSchema, ListParamsSchema, convertToApiParams } from '../utils/validation.js'
 
@@ -68,7 +69,7 @@ export class ProjectTools {
     }
   }
 
-  private async listProjects(args: any): Promise<CallToolResult> {
+  private async listProjects(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const params = validateInput(ListParamsSchema, args, 'list_projects')
       const apiParams = convertToApiParams(params)
@@ -76,12 +77,12 @@ export class ProjectTools {
       const response = await this.apiClient.getProjects(apiParams)
 
       const projects = Array.isArray(response.data) ? response.data : [response.data]
-      const projectList = projects.map((project: any) => ({
+      const projectList = projects.map((project: Project) => ({
         id: project.id,
-        name: project.attributes?.name || 'Unknown',
-        description: project.attributes?.description || '',
-        created_at: project.attributes?.created_at,
-        updated_at: project.attributes?.updated_at,
+        name: project.attributes.name,
+        description: project.attributes.description || '',
+        created_at: project.attributes.created_at,
+        updated_at: project.attributes.updated_at,
       }))
 
       return {
@@ -103,20 +104,20 @@ export class ProjectTools {
     }, 'listing projects')
   }
 
-  private async getProject(args: any): Promise<CallToolResult> {
+  private async getProject(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_project')
+      const projectId = validateInput(ProjectIdSchema, (args as { projectId?: string })?.projectId, 'get_project')
 
       const response = await this.apiClient.getProject(projectId)
 
-      const project = response.data
+      const project = response.data as Project
       const projectDetails = {
         id: project.id,
         type: project.type,
-        name: project.attributes?.name || 'Unknown',
-        description: project.attributes?.description || '',
-        created_at: project.attributes?.created_at,
-        updated_at: project.attributes?.updated_at,
+        name: project.attributes.name,
+        description: project.attributes.description || '',
+        created_at: project.attributes.created_at,
+        updated_at: project.attributes.updated_at,
         relationships: project.relationships || {},
       }
 

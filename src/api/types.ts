@@ -1,7 +1,7 @@
 // Common API response structure for Cucumber Studio
-export interface CucumberStudioResponse<T = any> {
+export interface CucumberStudioResponse<T = unknown> {
   data: T
-  included?: any[]
+  included?: Record<string, unknown>[]
   meta?: {
     count?: number
     total_count?: number
@@ -12,8 +12,8 @@ export interface CucumberStudioResponse<T = any> {
 export interface BaseAttributes {
   id: string
   type: string
-  attributes: Record<string, any>
-  relationships?: Record<string, any>
+  attributes: Record<string, unknown>
+  relationships?: Record<string, unknown>
 }
 
 // Project related types
@@ -88,6 +88,28 @@ export interface TestExecution extends BaseAttributes {
   }
 }
 
+// Build related types
+export interface Build extends BaseAttributes {
+  type: 'builds'
+  attributes: {
+    name: string
+    description?: string
+    created_at: string
+    updated_at: string
+  }
+}
+
+// Execution Environment related types
+export interface ExecutionEnvironment extends BaseAttributes {
+  type: 'execution_environments'
+  attributes: {
+    name: string
+    description?: string
+    created_at: string
+    updated_at: string
+  }
+}
+
 // Tag related types
 export interface Tag extends BaseAttributes {
   type: 'tags'
@@ -107,7 +129,7 @@ export interface CucumberStudioError {
 }
 
 // Query parameters for list endpoints
-export interface ListParams {
+export interface ListParams extends Record<string, unknown> {
   'page[number]'?: number
   'page[size]'?: number
   'filter[name]'?: string

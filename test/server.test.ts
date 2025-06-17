@@ -1,3 +1,4 @@
+import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 // Mock all dependencies with factory functions
@@ -40,8 +41,6 @@ vi.mock('@/tools/test-runs.js', () => ({
 }))
 
 // Import after mocks are set up
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
-
 import { CucumberStudioApiClient } from '@/api/client.js'
 import { configManager } from '@/config/settings.js'
 import { CucumberStudioMcpServer } from '@/server.js'

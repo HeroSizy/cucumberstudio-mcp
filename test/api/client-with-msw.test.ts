@@ -66,7 +66,7 @@ describe('CucumberStudioApiClient with MSW', () => {
       
       expect(response.data).toEqual(mockProjects.data)
       expect(response.data).toHaveLength(3)
-      expect(response.data[0].attributes.name).toBe('E-commerce Platform')
+      expect((response.data as any)[0].attributes.name).toBe('E-commerce Platform')
     })
   })
 
@@ -75,8 +75,8 @@ describe('CucumberStudioApiClient with MSW', () => {
       const response = await client.getProject('1')
       
       expect(response.data).toEqual(mockProject.data)
-      expect(response.data.id).toBe('1')
-      expect(response.data.attributes.name).toBe('E-commerce Platform')
+      expect((response.data as any).id).toBe('1')
+      expect((response.data as any).attributes.name).toBe('E-commerce Platform')
     })
 
     it('should throw error for non-existent project', async () => {

@@ -2,6 +2,7 @@ import { Tool, CallToolRequest, CallToolResult, TextContent } from '@modelcontex
 import { z } from 'zod'
 
 import { CucumberStudioApiClient } from '../api/client.js'
+import { ActionWord } from '../api/types.js'
 import { safeExecute } from '../utils/errors.js'
 import {
   validateInput,
@@ -114,22 +115,22 @@ export class ActionWordTools {
     }
   }
 
-  private async listActionWords(args: any): Promise<CallToolResult> {
+  private async listActionWords(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'list_action_words')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_action_words')
       const listParams = validateInput(ListParamsSchema, args, 'list_action_words')
       const apiParams = convertToApiParams(listParams)
 
       const response = await this.apiClient.getActionWords(projectId, apiParams)
 
       const actionWords = Array.isArray(response.data) ? response.data : [response.data]
-      const actionWordList = actionWords.map((actionWord: any) => ({
+      const actionWordList = actionWords.map((actionWord: ActionWord) => ({
         id: actionWord.id,
-        name: actionWord.attributes?.name || 'Unknown',
-        description: actionWord.attributes?.description || '',
-        definition: actionWord.attributes?.definition || '',
-        created_at: actionWord.attributes?.created_at,
-        updated_at: actionWord.attributes?.updated_at,
+        name: actionWord.attributes.name,
+        description: actionWord.attributes.description || '',
+        definition: actionWord.attributes.definition || '',
+        created_at: actionWord.attributes.created_at,
+        updated_at: actionWord.attributes.updated_at,
       }))
 
       return {
@@ -151,22 +152,22 @@ export class ActionWordTools {
     }, 'listing action words')
   }
 
-  private async getActionWord(args: any): Promise<CallToolResult> {
+  private async getActionWord(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_action_word')
-      const actionWordId = validateInput(ActionWordIdSchema, args?.actionWordId, 'get_action_word')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_action_word')
+      const actionWordId = validateInput(ActionWordIdSchema, (args as Record<string, unknown>)?.actionWordId, 'get_action_word')
 
       const response = await this.apiClient.getActionWord(projectId, actionWordId)
 
-      const actionWord = response.data
+      const actionWord = response.data as ActionWord
       const actionWordDetails = {
         id: actionWord.id,
         type: actionWord.type,
-        name: actionWord.attributes?.name || 'Unknown',
-        description: actionWord.attributes?.description || '',
-        definition: actionWord.attributes?.definition || '',
-        created_at: actionWord.attributes?.created_at,
-        updated_at: actionWord.attributes?.updated_at,
+        name: actionWord.attributes.name,
+        description: actionWord.attributes.description || '',
+        definition: actionWord.attributes.definition || '',
+        created_at: actionWord.attributes.created_at,
+        updated_at: actionWord.attributes.updated_at,
         relationships: actionWord.relationships || {},
       }
 
@@ -188,7 +189,7 @@ export class ActionWordTools {
     }, 'getting action word details')
   }
 
-  private async findActionWordsByTags(args: any): Promise<CallToolResult> {
+  private async findActionWordsByTags(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const { projectId, tags, pagination } = validateInput(
         FindActionWordsByTagsSchema,
@@ -200,13 +201,13 @@ export class ActionWordTools {
       const response = await this.apiClient.findActionWordsByTag(projectId, tags, apiParams)
 
       const actionWords = Array.isArray(response.data) ? response.data : [response.data]
-      const actionWordList = actionWords.map((actionWord: any) => ({
+      const actionWordList = actionWords.map((actionWord: ActionWord) => ({
         id: actionWord.id,
-        name: actionWord.attributes?.name || 'Unknown',
-        description: actionWord.attributes?.description || '',
-        definition: actionWord.attributes?.definition || '',
-        created_at: actionWord.attributes?.created_at,
-        updated_at: actionWord.attributes?.updated_at,
+        name: actionWord.attributes.name,
+        description: actionWord.attributes.description || '',
+        definition: actionWord.attributes.definition || '',
+        created_at: actionWord.attributes.created_at,
+        updated_at: actionWord.attributes.updated_at,
       }))
 
       return {

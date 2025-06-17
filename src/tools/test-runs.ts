@@ -1,6 +1,7 @@
 import { Tool, CallToolRequest, CallToolResult, TextContent } from '@modelcontextprotocol/sdk/types.js'
 
 import { CucumberStudioApiClient } from '../api/client.js'
+import { TestRun, TestExecution, Build, ExecutionEnvironment } from '../api/types.js'
 import { safeExecute } from '../utils/errors.js'
 import {
   validateInput,
@@ -164,22 +165,22 @@ export class TestRunTools {
     }
   }
 
-  private async listTestRuns(args: any): Promise<CallToolResult> {
+  private async listTestRuns(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'list_test_runs')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_test_runs')
       const listParams = validateInput(ListParamsSchema, args, 'list_test_runs')
       const apiParams = convertToApiParams(listParams)
 
       const response = await this.apiClient.getTestRuns(projectId, apiParams)
 
       const testRuns = Array.isArray(response.data) ? response.data : [response.data]
-      const testRunList = testRuns.map((testRun: any) => ({
+      const testRunList = testRuns.map((testRun: TestRun) => ({
         id: testRun.id,
-        name: testRun.attributes?.name || 'Unknown',
-        description: testRun.attributes?.description || '',
-        execution_environment: testRun.attributes?.execution_environment || '',
-        created_at: testRun.attributes?.created_at,
-        updated_at: testRun.attributes?.updated_at,
+        name: testRun.attributes.name,
+        description: testRun.attributes.description || '',
+        execution_environment: testRun.attributes.execution_environment || '',
+        created_at: testRun.attributes.created_at,
+        updated_at: testRun.attributes.updated_at,
       }))
 
       return {
@@ -201,22 +202,22 @@ export class TestRunTools {
     }, 'listing test runs')
   }
 
-  private async getTestRun(args: any): Promise<CallToolResult> {
+  private async getTestRun(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_test_run')
-      const testRunId = validateInput(TestRunIdSchema, args?.testRunId, 'get_test_run')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_test_run')
+      const testRunId = validateInput(TestRunIdSchema, (args as Record<string, unknown>)?.testRunId, 'get_test_run')
 
       const response = await this.apiClient.getTestRun(projectId, testRunId)
 
-      const testRun = response.data
+      const testRun = response.data as TestRun
       const testRunDetails = {
         id: testRun.id,
         type: testRun.type,
-        name: testRun.attributes?.name || 'Unknown',
-        description: testRun.attributes?.description || '',
-        execution_environment: testRun.attributes?.execution_environment || '',
-        created_at: testRun.attributes?.created_at,
-        updated_at: testRun.attributes?.updated_at,
+        name: testRun.attributes.name,
+        description: testRun.attributes.description || '',
+        execution_environment: testRun.attributes.execution_environment || '',
+        created_at: testRun.attributes.created_at,
+        updated_at: testRun.attributes.updated_at,
         relationships: testRun.relationships || {},
       }
 
@@ -238,23 +239,23 @@ export class TestRunTools {
     }, 'getting test run details')
   }
 
-  private async getTestExecutions(args: any): Promise<CallToolResult> {
+  private async getTestExecutions(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_test_executions')
-      const testRunId = validateInput(TestRunIdSchema, args?.testRunId, 'get_test_executions')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_test_executions')
+      const testRunId = validateInput(TestRunIdSchema, (args as Record<string, unknown>)?.testRunId, 'get_test_executions')
       const listParams = validateInput(ListParamsSchema, args, 'get_test_executions')
       const apiParams = convertToApiParams(listParams)
 
       const response = await this.apiClient.getTestExecutions(projectId, testRunId, apiParams)
 
       const executions = Array.isArray(response.data) ? response.data : [response.data]
-      const executionList = executions.map((execution: any) => ({
+      const executionList = executions.map((execution: TestExecution) => ({
         id: execution.id,
-        status: execution.attributes?.status || 'unknown',
-        scenario_id: execution.attributes?.scenario_id,
-        test_run_id: execution.attributes?.test_run_id,
-        created_at: execution.attributes?.created_at,
-        updated_at: execution.attributes?.updated_at,
+        status: execution.attributes.status,
+        scenario_id: execution.attributes.scenario_id,
+        test_run_id: execution.attributes.test_run_id,
+        created_at: execution.attributes.created_at,
+        updated_at: execution.attributes.updated_at,
       }))
 
       return {
@@ -277,20 +278,21 @@ export class TestRunTools {
     }, 'getting test executions')
   }
 
-  private async listBuilds(args: any): Promise<CallToolResult> {
+  private async listBuilds(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'list_builds')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_builds')
       const listParams = validateInput(ListParamsSchema, args, 'list_builds')
       const apiParams = convertToApiParams(listParams)
 
       const response = await this.apiClient.getBuilds(projectId, apiParams)
 
       const builds = Array.isArray(response.data) ? response.data : [response.data]
-      const buildList = builds.map((build: any) => ({
+      const buildList = builds.map((build: Build) => ({
         id: build.id,
-        name: build.attributes?.name || 'Unknown',
-        created_at: build.attributes?.created_at,
-        updated_at: build.attributes?.updated_at,
+        name: build.attributes.name,
+        description: build.attributes.description || '',
+        created_at: build.attributes.created_at,
+        updated_at: build.attributes.updated_at,
       }))
 
       return {
@@ -312,20 +314,21 @@ export class TestRunTools {
     }, 'listing builds')
   }
 
-  private async getBuild(args: any): Promise<CallToolResult> {
+  private async getBuild(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_build')
-      const buildId = validateInput(BuildIdSchema, args?.buildId, 'get_build')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_build')
+      const buildId = validateInput(BuildIdSchema, (args as Record<string, unknown>)?.buildId, 'get_build')
 
       const response = await this.apiClient.getBuild(projectId, buildId)
 
-      const build = response.data
+      const build = response.data as Build
       const buildDetails = {
         id: build.id,
         type: build.type,
-        name: build.attributes?.name || 'Unknown',
-        created_at: build.attributes?.created_at,
-        updated_at: build.attributes?.updated_at,
+        name: build.attributes.name,
+        description: build.attributes.description || '',
+        created_at: build.attributes.created_at,
+        updated_at: build.attributes.updated_at,
         relationships: build.relationships || {},
       }
 
@@ -347,20 +350,21 @@ export class TestRunTools {
     }, 'getting build details')
   }
 
-  private async listExecutionEnvironments(args: any): Promise<CallToolResult> {
+  private async listExecutionEnvironments(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'list_execution_environments')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_execution_environments')
       const listParams = validateInput(ListParamsSchema, args, 'list_execution_environments')
       const apiParams = convertToApiParams(listParams)
 
       const response = await this.apiClient.getExecutionEnvironments(projectId, apiParams)
 
       const environments = Array.isArray(response.data) ? response.data : [response.data]
-      const environmentList = environments.map((env: any) => ({
+      const environmentList = environments.map((env: ExecutionEnvironment) => ({
         id: env.id,
-        name: env.attributes?.name || 'Unknown',
-        created_at: env.attributes?.created_at,
-        updated_at: env.attributes?.updated_at,
+        name: env.attributes.name,
+        description: env.attributes.description || '',
+        created_at: env.attributes.created_at,
+        updated_at: env.attributes.updated_at,
       }))
 
       return {

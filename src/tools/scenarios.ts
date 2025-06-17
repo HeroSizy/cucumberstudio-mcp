@@ -2,6 +2,7 @@ import { Tool, CallToolRequest, CallToolResult, TextContent } from '@modelcontex
 import { z } from 'zod'
 
 import { CucumberStudioApiClient } from '../api/client.js'
+import { Scenario } from '../api/types.js'
 import { safeExecute } from '../utils/errors.js'
 import {
   validateInput,
@@ -114,23 +115,23 @@ export class ScenarioTools {
     }
   }
 
-  private async listScenarios(args: any): Promise<CallToolResult> {
+  private async listScenarios(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'list_scenarios')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_scenarios')
       const listParams = validateInput(ListParamsSchema, args, 'list_scenarios')
       const apiParams = convertToApiParams(listParams)
 
       const response = await this.apiClient.getScenarios(projectId, apiParams)
 
       const scenarios = Array.isArray(response.data) ? response.data : [response.data]
-      const scenarioList = scenarios.map((scenario: any) => ({
+      const scenarioList = scenarios.map((scenario: Scenario) => ({
         id: scenario.id,
-        name: scenario.attributes?.name || 'Unknown',
-        description: scenario.attributes?.description || '',
-        definition: scenario.attributes?.definition || '',
-        folder_id: scenario.attributes?.folder_id,
-        created_at: scenario.attributes?.created_at,
-        updated_at: scenario.attributes?.updated_at,
+        name: scenario.attributes.name,
+        description: scenario.attributes.description || '',
+        definition: scenario.attributes.definition || '',
+        folder_id: scenario.attributes.folder_id,
+        created_at: scenario.attributes.created_at,
+        updated_at: scenario.attributes.updated_at,
       }))
 
       return {
@@ -152,23 +153,23 @@ export class ScenarioTools {
     }, 'listing scenarios')
   }
 
-  private async getScenario(args: any): Promise<CallToolResult> {
+  private async getScenario(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, args?.projectId, 'get_scenario')
-      const scenarioId = validateInput(ScenarioIdSchema, args?.scenarioId, 'get_scenario')
+      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_scenario')
+      const scenarioId = validateInput(ScenarioIdSchema, (args as Record<string, unknown>)?.scenarioId, 'get_scenario')
 
       const response = await this.apiClient.getScenario(projectId, scenarioId)
 
-      const scenario = response.data
+      const scenario = response.data as Scenario
       const scenarioDetails = {
         id: scenario.id,
         type: scenario.type,
-        name: scenario.attributes?.name || 'Unknown',
-        description: scenario.attributes?.description || '',
-        definition: scenario.attributes?.definition || '',
-        folder_id: scenario.attributes?.folder_id,
-        created_at: scenario.attributes?.created_at,
-        updated_at: scenario.attributes?.updated_at,
+        name: scenario.attributes.name,
+        description: scenario.attributes.description || '',
+        definition: scenario.attributes.definition || '',
+        folder_id: scenario.attributes.folder_id,
+        created_at: scenario.attributes.created_at,
+        updated_at: scenario.attributes.updated_at,
         relationships: scenario.relationships || {},
       }
 
@@ -190,7 +191,7 @@ export class ScenarioTools {
     }, 'getting scenario details')
   }
 
-  private async findScenariosByTags(args: any): Promise<CallToolResult> {
+  private async findScenariosByTags(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const { projectId, tags, pagination } = validateInput(FindByTagsSchema, args, 'find_scenarios_by_tags')
       const apiParams = convertToApiParams({ pagination })
@@ -198,14 +199,14 @@ export class ScenarioTools {
       const response = await this.apiClient.findScenariosByTag(projectId, tags, apiParams)
 
       const scenarios = Array.isArray(response.data) ? response.data : [response.data]
-      const scenarioList = scenarios.map((scenario: any) => ({
+      const scenarioList = scenarios.map((scenario: Scenario) => ({
         id: scenario.id,
-        name: scenario.attributes?.name || 'Unknown',
-        description: scenario.attributes?.description || '',
-        definition: scenario.attributes?.definition || '',
-        folder_id: scenario.attributes?.folder_id,
-        created_at: scenario.attributes?.created_at,
-        updated_at: scenario.attributes?.updated_at,
+        name: scenario.attributes.name,
+        description: scenario.attributes.description || '',
+        definition: scenario.attributes.definition || '',
+        folder_id: scenario.attributes.folder_id,
+        created_at: scenario.attributes.created_at,
+        updated_at: scenario.attributes.updated_at,
       }))
 
       return {
