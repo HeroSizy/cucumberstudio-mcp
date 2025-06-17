@@ -4,14 +4,16 @@ A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studi
 
 ## Features
 
-- **Dual Transport Support** - STDIO and Streamable HTTP transports
+- **Dual Transport Support** - STDIO and Streamable HTTP transports with session management
 - **Project Management** - List and retrieve project details
 - **Scenario Access** - Browse test scenarios and search by tags
 - **Action Words** - Access reusable test steps and definitions
 - **Test Execution** - View test runs, executions, and build information
+- **Hot Reload Development** - Instant server restart on file changes with tsx --watch
+- **Configurable Logging** - Structured logging with multiple output destinations
 - **Comprehensive Error Handling** - Robust error handling with detailed feedback
 - **Type Safety** - Full TypeScript implementation with Zod validation
-- **Comprehensive Testing** - Near 100% test coverage with Vitest
+- **Comprehensive Testing** - 82%+ test coverage with Vitest and MSW
 
 ## Installation
 
@@ -51,38 +53,45 @@ cp .env.example .env
 ```bash
 # Production
 docker-compose up
-
-# Development with hot reload
-docker-compose --profile dev up cucumberstudio-mcp-dev
 ```
 
 ### Using Docker directly
 
 1. Build the image:
 ```bash
-# Production
 npm run docker:build
-
-# Development
-npm run docker:build:dev
 ```
 
 2. Run the container:
 ```bash
-# Production
 npm run docker:run
-
-# Development with hot reload
-npm run docker:run:dev
 ```
+
+The Docker setup includes health checks and automatic restarts for production use.
 
 ## Configuration
 
 The server requires Cucumber Studio API credentials. Get these from your Cucumber Studio account settings:
 
+### Required Environment Variables
 - `CUCUMBER_STUDIO_ACCESS_TOKEN` - Your API access token
-- `CUCUMBER_STUDIO_CLIENT_ID` - Your client ID
+- `CUCUMBER_STUDIO_CLIENT_ID` - Your client ID  
 - `CUCUMBER_STUDIO_UID` - Your user ID
+
+### Optional Configuration
+- `CUCUMBER_STUDIO_BASE_URL` - API base URL (default: https://studio.cucumberstudio.com/api)
+- `MCP_TRANSPORT` - Transport type: `stdio` (default), `http`, or `streamable-http`
+- `MCP_PORT` - HTTP transport port (default: 3000)
+- `MCP_HOST` - HTTP transport host (default: 0.0.0.0)
+- `MCP_CORS_ORIGIN` - CORS origin setting (default: true)
+
+### Logging Configuration
+- `LOG_LEVEL` - Log level: `error`, `warn`, `info`, `debug`, `trace` (default: info)
+- `LOG_API_RESPONSES` - Log Cucumber Studio API responses (default: false)
+- `LOG_REQUEST_BODIES` - Log API request bodies for debugging (default: false)
+- `LOG_RESPONSE_BODIES` - Log API response bodies for debugging (default: false)
+- `LOG_TRANSPORT` - Logging output: `console`, `stderr`, `file`, `none` (default: stderr)
+- `LOG_FILE` - Log file path (required if LOG_TRANSPORT=file)
 
 ## Usage
 
@@ -108,10 +117,6 @@ npm run dev:http
 npm run start:http
 ```
 
-#### Environment Variables
-- `MCP_TRANSPORT` - Transport type: `stdio` (default), `http`, or `streamable-http`
-- `MCP_PORT` - HTTP transport port (default: 3000)
-- `MCP_HOST` - HTTP transport host (default: 127.0.0.1)
 
 ### Using with Claude Desktop
 
@@ -172,12 +177,23 @@ Add this to your Claude Desktop configuration:
 
 ## Development
 
+### Hot Reload Development
+The server supports hot reload for rapid development:
+
+```bash
+# STDIO transport with hot reload
+npm run dev
+
+# HTTP transport with hot reload  
+npm run dev:http
+```
+
+Files are automatically recompiled and the server restarts when changes are detected.
+
+### Testing and Quality
 ```bash
 # Install dependencies
 npm install
-
-# Run in development mode
-npm run dev
 
 # Run type checking
 npm run typecheck
@@ -194,21 +210,34 @@ npm test
 # Run tests in watch mode
 npm run test:watch
 
-# Run tests with coverage
+# Run tests with coverage (82%+ coverage)
 npm run test:coverage
+
+# Run tests with UI
+npm run test:ui
 ```
 
 ## Architecture
 
-The server is built with a modular architecture:
+The server is built with a modular, production-ready architecture:
 
-- **TypeScript** - Full type safety throughout
-- **Dual Transports** - STDIO for local use, HTTP for remote access
+### Core Technologies
+- **TypeScript** - Full type safety with strict configuration
+- **Dual Transports** - STDIO for local use, Streamable HTTP for remote access
 - **Zod** - Runtime validation for API inputs and configuration
-- **Axios** - HTTP client with comprehensive error handling
+- **Axios** - HTTP client with comprehensive error handling and logging
 - **MCP SDK** - Official Model Context Protocol implementation
-- **Express** - HTTP server with CORS and security middleware
-- **Vitest** - Modern testing framework with comprehensive coverage
+- **Express** - HTTP server with CORS, security middleware, and session management
+- **Vitest** - Modern testing framework with 82%+ code coverage
+- **MSW** - Mock Service Worker for realistic API testing
+
+### Key Features
+- **Session Management** - HTTP transport with session tracking and cleanup
+- **Comprehensive Logging** - Structured logging with configurable outputs and levels
+- **Error Handling** - Robust error handling with detailed feedback and recovery
+- **Security** - Origin validation, CORS protection, and input sanitization
+- **Health Monitoring** - Health check endpoints and request/response tracking
+- **Development Workflow** - Hot reload, comprehensive testing, and Docker support
 
 ## Testing
 
