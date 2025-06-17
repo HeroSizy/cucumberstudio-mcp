@@ -1,5 +1,14 @@
 # Cucumber Studio MCP Server
 
+[![NPM Version](https://img.shields.io/npm/v/cucumberstudio-mcp)](https://www.npmjs.com/package/cucumberstudio-mcp)
+[![NPM Downloads](https://img.shields.io/npm/dm/cucumberstudio-mcp)](https://www.npmjs.com/package/cucumberstudio-mcp)
+[![Docker Pulls](https://img.shields.io/docker/pulls/herosizy/cucumberstudio-mcp)](https://hub.docker.com/r/herosizy/cucumberstudio-mcp)
+[![GitHub Release](https://img.shields.io/github/v/release/HeroSizy/cucumberstudio-mcp)](https://github.com/HeroSizy/cucumberstudio-mcp/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/HeroSizy/cucumberstudio-mcp/release.yml)](https://github.com/HeroSizy/cucumberstudio-mcp/actions)
+[![Test Coverage](https://img.shields.io/badge/coverage-82%25-brightgreen)](https://github.com/HeroSizy/cucumberstudio-mcp)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/github/license/HeroSizy/cucumberstudio-mcp)](https://github.com/HeroSizy/cucumberstudio-mcp/blob/master/LICENSE)
+
 A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studio's testing platform. This server enables AI assistants to retrieve test scenarios, action words, test runs, and project information from Cucumber Studio.
 
 ## Features
