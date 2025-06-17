@@ -3,12 +3,16 @@
 import { CucumberStudioMcpServer } from './server.js'
 import { StreamableHttpTransport, TransportType } from './transports/index.js'
 import { StderrLogger, getLogLevel } from './utils/logger.js'
+import { config as loadDotenv } from 'dotenv'
 
 /**
  * Main entry point for the Cucumber Studio MCP Server
  * Supports both STDIO and HTTP transports based on environment variables
  */
 async function main(): Promise<void> {
+  // Load .env file first to ensure environment variables are available
+  loadDotenv({ path: '.env' })
+  
   // Determine transport based on environment variable
   const transport = (process.env.MCP_TRANSPORT?.toLowerCase() || 'stdio') as TransportType
   const port = parseInt(process.env.MCP_PORT || '3000', 10)

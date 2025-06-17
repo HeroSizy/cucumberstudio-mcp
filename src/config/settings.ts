@@ -4,7 +4,7 @@ import { config as loadDotenv } from 'dotenv'
 // Configuration schema for type safety and validation
 const ConfigSchema = z.object({
   cucumberStudio: z.object({
-    baseUrl: z.string().url().default('https://studio-api.cucumberstudio.com'),
+    baseUrl: z.string().url().default('https://studio.cucumberstudio.com/api'),
     accessToken: z.string().min(1),
     clientId: z.string().min(1),
     uid: z.string().min(1),
