@@ -14,7 +14,7 @@ const ConfigSchema = z.object({
     version: z.string().default('1.0.0'),
     transport: z.enum(['stdio', 'http', 'streamable-http']).default('stdio'),
     port: z.number().int().min(1).max(65535).default(3000),
-    host: z.string().default('127.0.0.1'),
+    host: z.string().default('0.0.0.0'),
   }),
   logging: z.object({
     level: z.enum(['error', 'warn', 'info', 'debug', 'trace']).default('info'),
