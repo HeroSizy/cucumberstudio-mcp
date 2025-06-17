@@ -209,7 +209,7 @@ export class TestRunTools {
 
       const response = await this.apiClient.getTestRun(projectId, testRunId)
 
-      const testRun = response.data as TestRun
+      const testRun = response.data
       const testRunDetails = {
         id: testRun.id,
         type: testRun.type,
@@ -321,7 +321,7 @@ export class TestRunTools {
 
       const response = await this.apiClient.getBuild(projectId, buildId)
 
-      const build = response.data as Build
+      const build = response.data
       const buildDetails = {
         id: build.id,
         type: build.type,

@@ -1,14 +1,27 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, beforeAll, afterAll, afterEach } from 'vitest'
 
 import { CucumberStudioApiClient } from '@/api/client.js'
 import type { Config } from '@/config/settings.js'
 import { NoOpLogger } from '@/utils/logger.js'
 
 import { mockProjects, mockProject } from '../mocks/data/index.js'
+import { startMockServer, stopMockServer, resetMockServer } from '../mocks/server.js'
 
 describe('CucumberStudioApiClient with MSW', () => {
   let config: Config
   let client: CucumberStudioApiClient
+
+  beforeAll(() => {
+    startMockServer()
+  })
+
+  afterAll(() => {
+    stopMockServer()
+  })
+
+  afterEach(() => {
+    resetMockServer()
+  })
 
   beforeEach(() => {
     config = {
@@ -64,9 +77,12 @@ describe('CucumberStudioApiClient with MSW', () => {
     it('should fetch all projects', async () => {
       const response = await client.getProjects()
       
+      // Note: API client should return CucumberStudioResponse<Project[]> format
+      // but the actual response structure needs investigation
+      
       expect(response.data).toEqual(mockProjects.data)
       expect(response.data).toHaveLength(3)
-      expect((response.data as any)[0].attributes.name).toBe('E-commerce Platform')
+      expect(response.data[0].attributes.name).toBe('E-commerce Platform')
     })
   })
 
@@ -75,8 +91,8 @@ describe('CucumberStudioApiClient with MSW', () => {
       const response = await client.getProject('1')
       
       expect(response.data).toEqual(mockProject.data)
-      expect((response.data as any).id).toBe('1')
-      expect((response.data as any).attributes.name).toBe('E-commerce Platform')
+      expect(response.data.id).toBe('1')
+      expect(response.data.attributes.name).toBe('E-commerce Platform')
     })
 
     it('should throw error for non-existent project', async () => {

@@ -159,7 +159,7 @@ export class ActionWordTools {
 
       const response = await this.apiClient.getActionWord(projectId, actionWordId)
 
-      const actionWord = response.data as ActionWord
+      const actionWord = response.data
       const actionWordDetails = {
         id: actionWord.id,
         type: actionWord.type,

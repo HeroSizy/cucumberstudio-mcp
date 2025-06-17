@@ -110,7 +110,7 @@ export class ProjectTools {
 
       const response = await this.apiClient.getProject(projectId)
 
-      const project = response.data as Project
+      const project = response.data
       const projectDetails = {
         id: project.id,
         type: project.type,

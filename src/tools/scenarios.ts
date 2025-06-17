@@ -160,7 +160,7 @@ export class ScenarioTools {
 
       const response = await this.apiClient.getScenario(projectId, scenarioId)
 
-      const scenario = response.data as Scenario
+      const scenario = response.data
       const scenarioDetails = {
         id: scenario.id,
         type: scenario.type,

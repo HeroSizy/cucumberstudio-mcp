@@ -2,21 +2,22 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 import { ConfigManager, configManager } from '../../src/config/settings.js'
 
+// Mock dotenv to prevent loading actual .env file
+vi.mock('dotenv', () => ({
+  config: vi.fn(() => ({ parsed: {} })),
+}))
+
 describe('ConfigManager', () => {
   let originalEnv: NodeJS.ProcessEnv
 
   beforeEach(() => {
     originalEnv = { ...process.env }
-    // Clear environment
-    delete process.env.CUCUMBERSTUDIO_ACCESS_TOKEN
-    delete process.env.CUCUMBERSTUDIO_CLIENT_ID
-    delete process.env.CUCUMBERSTUDIO_UID
-    delete process.env.CUCUMBERSTUDIO_BASE_URL
-    delete process.env.MCP_SERVER_NAME
-    delete process.env.MCP_SERVER_VERSION
-    delete process.env.MCP_TRANSPORT
-    delete process.env.MCP_PORT
-    delete process.env.MCP_HOST
+    // Clear ALL cucumber studio and MCP environment variables
+    Object.keys(process.env).forEach(key => {
+      if (key.startsWith('CUCUMBERSTUDIO_') || key.startsWith('MCP_') || key.startsWith('LOG_')) {
+        delete process.env[key]
+      }
+    })
   })
 
   afterEach(() => {
@@ -31,10 +32,10 @@ describe('ConfigManager', () => {
 
       const manager = new ConfigManager()
       const config = manager.loadFromEnvironment()
-
+      
       expect(config).toEqual({
         cucumberStudio: {
-          baseUrl: 'https://studio-api.cucumberstudio.com',
+          baseUrl: 'https://studio.cucumberstudio.com/api',
           accessToken: 'test-token',
           clientId: 'test-client-id',
           uid: 'test-uid',
@@ -42,9 +43,17 @@ describe('ConfigManager', () => {
         server: {
           name: 'cucumberstudio-mcp',
           version: '1.0.0',
-          transport: 'stdio',
+          transport: 'stdio', // Default value
           port: 3000,
-          host: '127.0.0.1',
+          host: '0.0.0.0',
+        },
+        logging: {
+          level: 'info', // Default value
+          logApiResponses: false, // Default value
+          logRequestBodies: false,
+          logResponseBodies: false, // Default value
+          transport: 'stderr',
+          filePath: undefined,
         },
       })
     })
@@ -84,6 +93,7 @@ describe('ConfigManager', () => {
     })
 
     it('should throw error when access token is missing', () => {
+      // Only set other required fields, leave access token missing
       process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
       process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 

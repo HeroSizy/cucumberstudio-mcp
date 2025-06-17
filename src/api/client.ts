@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import { Config } from '../config/settings.js'
 import { Logger } from '../utils/logger.js'
 
-import { CucumberStudioResponse, CucumberStudioError, ListParams } from './types.js'
+import { CucumberStudioResponse, CucumberStudioError, ListParams, Project, Scenario, ActionWord, Folder, TestRun, TestExecution, Build, ExecutionEnvironment } from './types.js'
 
 export class CucumberStudioApiError extends Error {
   constructor(
@@ -147,88 +147,88 @@ export class CucumberStudioApiClient {
   }
 
   // PROJECT ENDPOINTS
-  async getProjects(params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get('/projects', params)
+  async getProjects(params?: ListParams): Promise<CucumberStudioResponse<Project[]>> {
+    return this.get<Project[]>('/projects', params)
   }
 
-  async getProject(projectId: string): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}`)
+  async getProject(projectId: string): Promise<CucumberStudioResponse<Project>> {
+    return this.get<Project>(`/projects/${projectId}`)
   }
 
   // SCENARIO ENDPOINTS
-  async getScenarios(projectId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/scenarios`, params)
+  async getScenarios(projectId: string, params?: ListParams): Promise<CucumberStudioResponse<Scenario[]>> {
+    return this.get<Scenario[]>(`/projects/${projectId}/scenarios`, params)
   }
 
-  async getScenario(projectId: string, scenarioId: string): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/scenarios/${scenarioId}`)
+  async getScenario(projectId: string, scenarioId: string): Promise<CucumberStudioResponse<Scenario>> {
+    return this.get<Scenario>(`/projects/${projectId}/scenarios/${scenarioId}`)
   }
 
-  async findScenariosByTag(projectId: string, tags: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/scenarios/find_by_tags`, {
+  async findScenariosByTag(projectId: string, tags: string, params?: ListParams): Promise<CucumberStudioResponse<Scenario[]>> {
+    return this.get<Scenario[]>(`/projects/${projectId}/scenarios/find_by_tags`, {
       ...params,
       'filter[tags]': tags,
     })
   }
 
   // ACTION WORD ENDPOINTS
-  async getActionWords(projectId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/actionwords`, params)
+  async getActionWords(projectId: string, params?: ListParams): Promise<CucumberStudioResponse<ActionWord[]>> {
+    return this.get<ActionWord[]>(`/projects/${projectId}/actionwords`, params)
   }
 
-  async getActionWord(projectId: string, actionWordId: string): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/actionwords/${actionWordId}`)
+  async getActionWord(projectId: string, actionWordId: string): Promise<CucumberStudioResponse<ActionWord>> {
+    return this.get<ActionWord>(`/projects/${projectId}/actionwords/${actionWordId}`)
   }
 
-  async findActionWordsByTag(projectId: string, tags: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/actionwords/find_by_tags`, {
+  async findActionWordsByTag(projectId: string, tags: string, params?: ListParams): Promise<CucumberStudioResponse<ActionWord[]>> {
+    return this.get<ActionWord[]>(`/projects/${projectId}/actionwords/find_by_tags`, {
       ...params,
       'filter[tags]': tags,
     })
   }
 
   // FOLDER ENDPOINTS
-  async getFolders(projectId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/folders`, params)
+  async getFolders(projectId: string, params?: ListParams): Promise<CucumberStudioResponse<Folder[]>> {
+    return this.get<Folder[]>(`/projects/${projectId}/folders`, params)
   }
 
-  async getFolder(projectId: string, folderId: string): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/folders/${folderId}`)
+  async getFolder(projectId: string, folderId: string): Promise<CucumberStudioResponse<Folder>> {
+    return this.get<Folder>(`/projects/${projectId}/folders/${folderId}`)
   }
 
-  async getFolderChildren(projectId: string, folderId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/folders/${folderId}/children`, params)
+  async getFolderChildren(projectId: string, folderId: string, params?: ListParams): Promise<CucumberStudioResponse<Folder[]>> {
+    return this.get<Folder[]>(`/projects/${projectId}/folders/${folderId}/children`, params)
   }
 
-  async getFolderScenarios(projectId: string, folderId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/folders/${folderId}/scenarios`, params)
+  async getFolderScenarios(projectId: string, folderId: string, params?: ListParams): Promise<CucumberStudioResponse<Scenario[]>> {
+    return this.get<Scenario[]>(`/projects/${projectId}/folders/${folderId}/scenarios`, params)
   }
 
   // TEST RUN ENDPOINTS
-  async getTestRuns(projectId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/test_runs`, params)
+  async getTestRuns(projectId: string, params?: ListParams): Promise<CucumberStudioResponse<TestRun[]>> {
+    return this.get<TestRun[]>(`/projects/${projectId}/test_runs`, params)
   }
 
-  async getTestRun(projectId: string, testRunId: string): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/test_runs/${testRunId}`)
+  async getTestRun(projectId: string, testRunId: string): Promise<CucumberStudioResponse<TestRun>> {
+    return this.get<TestRun>(`/projects/${projectId}/test_runs/${testRunId}`)
   }
 
-  async getTestExecutions(projectId: string, testRunId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/test_runs/${testRunId}/test_executions`, params)
+  async getTestExecutions(projectId: string, testRunId: string, params?: ListParams): Promise<CucumberStudioResponse<TestExecution[]>> {
+    return this.get<TestExecution[]>(`/projects/${projectId}/test_runs/${testRunId}/test_executions`, params)
   }
 
   // BUILD ENDPOINTS
-  async getBuilds(projectId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/builds`, params)
+  async getBuilds(projectId: string, params?: ListParams): Promise<CucumberStudioResponse<Build[]>> {
+    return this.get<Build[]>(`/projects/${projectId}/builds`, params)
   }
 
-  async getBuild(projectId: string, buildId: string): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/builds/${buildId}`)
+  async getBuild(projectId: string, buildId: string): Promise<CucumberStudioResponse<Build>> {
+    return this.get<Build>(`/projects/${projectId}/builds/${buildId}`)
   }
 
   // EXECUTION ENVIRONMENT ENDPOINTS
-  async getExecutionEnvironments(projectId: string, params?: ListParams): Promise<CucumberStudioResponse> {
-    return this.get(`/projects/${projectId}/execution_environments`, params)
+  async getExecutionEnvironments(projectId: string, params?: ListParams): Promise<CucumberStudioResponse<ExecutionEnvironment[]>> {
+    return this.get<ExecutionEnvironment[]>(`/projects/${projectId}/execution_environments`, params)
   }
 
   /**

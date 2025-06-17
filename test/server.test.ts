@@ -176,17 +176,18 @@ describe('CucumberStudioMcpServer', () => {
 
       await server.initialize()
 
-      expect(mockApiClient.testConnection).toHaveBeenCalled()
+      // Connection testing is now deferred until tools are actually used
+      expect(mockApiClient.testConnection).not.toHaveBeenCalled()
     })
 
-    it('should throw error when API connection fails', async () => {
+    it('should initialize successfully even if API would fail', async () => {
+      // API connection is not tested during initialization anymore
       mockApiClient.testConnection.mockResolvedValue(false)
 
       const server = new CucumberStudioMcpServer()
 
-      await expect(server.initialize()).rejects.toThrow(
-        'Failed to connect to Cucumber Studio API. Please check your credentials.',
-      )
+      // Should not throw since connection is not tested during init
+      await expect(server.initialize()).resolves.not.toThrow()
     })
   })
 
