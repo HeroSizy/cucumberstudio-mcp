@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+// import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+
 import { StdioTransport } from '../../src/transports/stdio.js'
 
 // Mock the SDK components

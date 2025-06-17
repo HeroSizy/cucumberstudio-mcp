@@ -1,7 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import axios from 'axios'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+
 import { CucumberStudioApiClient, CucumberStudioApiError } from '../../src/api/client.js'
 import type { Config } from '../../src/config/settings.js'
+import { NoOpLogger } from '../../src/utils/logger.js'
 
 // Mock axios
 vi.mock('axios')
@@ -27,6 +29,13 @@ describe('CucumberStudioApiClient', () => {
         port: 3000,
         host: '127.0.0.1',
       },
+      logging: {
+        level: 'info' as const,
+        logApiResponses: false,
+        logRequestBodies: false,
+        logResponseBodies: false,
+        transport: 'stderr' as const,
+      },
     }
 
     mockAxiosInstance = {
@@ -35,6 +44,9 @@ describe('CucumberStudioApiClient', () => {
       put: vi.fn(),
       delete: vi.fn(),
       interceptors: {
+        request: {
+          use: vi.fn(),
+        },
         response: {
           use: vi.fn(),
         },
@@ -42,7 +54,8 @@ describe('CucumberStudioApiClient', () => {
     }
 
     mockedAxios.create.mockReturnValue(mockAxiosInstance)
-    client = new CucumberStudioApiClient(config)
+    const logger = new NoOpLogger()
+    client = new CucumberStudioApiClient(config, logger)
   })
 
   afterEach(() => {
@@ -302,7 +315,7 @@ describe('CucumberStudioApiClient', () => {
     })
 
     it('should create error with status and details', () => {
-      const details = { errors: [{ detail: 'Invalid', title: 'Error' }] }
+      const details = { errors: [{ detail: 'Invalid', title: 'Error', status: '400' }] }
       const error = new CucumberStudioApiError('API error', 400, details)
 
       expect(error.message).toBe('API error')

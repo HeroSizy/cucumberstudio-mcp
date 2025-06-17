@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { CallToolRequest, TextContent } from '@modelcontextprotocol/sdk/types.js'
-import { ProjectTools } from '../../src/tools/projects.js'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+
 import { CucumberStudioApiClient } from '../../src/api/client.js'
+import { ProjectTools } from '../../src/tools/projects.js'
 
 // Mock the API client
 vi.mock('../../src/api/client.js')

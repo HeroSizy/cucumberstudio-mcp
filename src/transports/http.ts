@@ -1,9 +1,11 @@
-import express from 'express'
-import cors from 'cors'
 import { randomUUID } from 'crypto'
+
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js'
+import cors from 'cors'
+import express from 'express'
+
 import { Logger } from '../utils/logger.js'
 
 // Extend Express Request interface to include requestId

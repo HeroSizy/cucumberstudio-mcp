@@ -1,7 +1,9 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
+
 import { Config } from '../config/settings.js'
-import { CucumberStudioResponse, CucumberStudioError, ListParams } from './types.js'
 import { Logger } from '../utils/logger.js'
+
+import { CucumberStudioResponse, CucumberStudioError, ListParams } from './types.js'
 
 export class CucumberStudioApiError extends Error {
   constructor(
@@ -236,7 +238,7 @@ export class CucumberStudioApiClient {
     try {
       await this.getProjects({ 'page[size]': 1 })
       return true
-    } catch (error) {
+    } catch {
       return false
     }
   }

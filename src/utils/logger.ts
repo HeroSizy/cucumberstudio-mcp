@@ -34,6 +34,17 @@ const LOG_COLORS: Record<LogLevel, string> = {
 const RESET_COLOR = '\x1b[0m'
 
 /**
+ * No-operation logger for testing - discards all log messages
+ */
+export class NoOpLogger implements Logger {
+  error(): void {}
+  warn(): void {}
+  info(): void {}
+  debug(): void {}
+  trace(): void {}
+}
+
+/**
  * Logger implementation that outputs to stderr
  * Safe for use with STDIO MCP transport as it won't interfere with stdout protocol
  */

@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js'
+import { describe, it, expect } from 'vitest'
+
 import { createMcpError, safeExecute } from '@/utils/errors.js'
 
 describe('errors utilities', () => {

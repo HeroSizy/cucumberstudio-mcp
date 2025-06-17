@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+
 import {
   ProjectIdSchema,
   ScenarioIdSchema,

@@ -1,8 +1,8 @@
-const tseslint = require('@typescript-eslint/eslint-plugin')
-const tsparser = require('@typescript-eslint/parser')
-const importPlugin = require('eslint-plugin-import')
+import tseslint from '@typescript-eslint/eslint-plugin'
+import tsparser from '@typescript-eslint/parser'
+import importPlugin from 'eslint-plugin-import'
 
-module.exports = [
+export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
@@ -75,11 +75,12 @@ module.exports = [
     },
   },
   {
-    files: ['**/*.test.ts', '**/*.spec.ts'],
+    files: ['**/*.test.ts', '**/*.spec.ts', 'test/**/*.ts'],
     rules: {
       // Relax some rules for test files
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
   {
@@ -90,6 +91,7 @@ module.exports = [
       'coverage/**',
       '*.js', // Ignore JS files in root (like this config file)
       'vitest.config.ts', // Vitest config not in main tsconfig
+      '**/*.d.ts', // Ignore generated TypeScript declaration files
     ],
   },
 ]

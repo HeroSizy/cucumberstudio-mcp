@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+
 import { ConfigManager, configManager } from '../../src/config/settings.js'
 
 describe('ConfigManager', () => {

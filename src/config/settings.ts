@@ -1,5 +1,5 @@
-import { z } from 'zod'
 import { config as loadDotenv } from 'dotenv'
+import { z } from 'zod'
 
 // Configuration schema for type safety and validation
 const ConfigSchema = z.object({

@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { ScenarioTools } from '@/tools/scenarios.js'
+
+// import { CucumberStudioApiClient } from '@/api/client.js'
 import { ActionWordTools } from '@/tools/action-words.js'
+import { ScenarioTools } from '@/tools/scenarios.js'
 import { TestRunTools } from '@/tools/test-runs.js'
-import { CucumberStudioApiClient } from '@/api/client.js'
 
 // Mock the API client
 vi.mock('@/api/client.js')
@@ -56,7 +57,14 @@ describe('Tools Basic Functionality', () => {
     it('should throw error for unknown tool', async () => {
       const scenarioTools = new ScenarioTools(mockApiClient)
 
-      await expect(scenarioTools.handleToolCall('unknown_tool', {})).rejects.toThrow()
+      const request = {
+        method: 'tools/call' as const,
+        params: {
+          name: 'unknown_tool',
+          arguments: {},
+        },
+      }
+      await expect(scenarioTools.handleToolCall(request)).rejects.toThrow()
     })
   })
 
@@ -87,7 +95,14 @@ describe('Tools Basic Functionality', () => {
     it('should throw error for unknown tool', async () => {
       const actionWordTools = new ActionWordTools(mockApiClient)
 
-      await expect(actionWordTools.handleToolCall('unknown_tool', {})).rejects.toThrow()
+      const request = {
+        method: 'tools/call' as const,
+        params: {
+          name: 'unknown_tool',
+          arguments: {},
+        },
+      }
+      await expect(actionWordTools.handleToolCall(request)).rejects.toThrow()
     })
   })
 
@@ -118,7 +133,14 @@ describe('Tools Basic Functionality', () => {
     it('should throw error for unknown tool', async () => {
       const testRunTools = new TestRunTools(mockApiClient)
 
-      await expect(testRunTools.handleToolCall('unknown_tool', {})).rejects.toThrow()
+      const request = {
+        method: 'tools/call' as const,
+        params: {
+          name: 'unknown_tool',
+          arguments: {},
+        },
+      }
+      await expect(testRunTools.handleToolCall(request)).rejects.toThrow()
     })
   })
 })

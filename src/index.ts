@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
+import { config as loadDotenv } from 'dotenv'
+
 import { CucumberStudioMcpServer } from './server.js'
 import { StreamableHttpTransport, TransportType } from './transports/index.js'
 import { StderrLogger, getLogLevel } from './utils/logger.js'
-import { config as loadDotenv } from 'dotenv'
 
 /**
  * Main entry point for the Cucumber Studio MCP Server

@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw'
+
 import { mockScenarios, mockScenario, mockFolders } from '../data/scenarios.js'
 
 const BASE_URL = 'https://api.example.com'

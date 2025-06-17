@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 
 // Simple HTTP transport test without complex express mocking
 describe('StreamableHttpTransport (Simple)', () => {

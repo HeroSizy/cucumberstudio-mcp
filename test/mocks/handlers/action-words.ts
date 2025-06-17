@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw'
+
 import { mockActionWords, mockActionWord } from '../data/action-words.js'
 
 const BASE_URL = 'https://api.example.com'

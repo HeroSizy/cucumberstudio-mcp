@@ -1,4 +1,5 @@
 import { setupServer } from 'msw/node'
+
 import { handlers } from './handlers/index.js'
 
 // Create and export the mock server

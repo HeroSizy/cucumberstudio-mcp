@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw'
+
 import { mockProjects, mockProject } from '../data/projects.js'
 
 const BASE_URL = 'https://api.example.com'
@@ -23,14 +24,14 @@ export const projectHandlers = [
       return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const projectId = Number(params.id)
-    const project = mockProjects.find((p) => p.id === projectId)
+    const projectId = String(params.id)
+    const project = mockProjects.data.find((p: any) => p.id === projectId)
     
     if (!project) {
       return HttpResponse.json({ error: 'Project not found' }, { status: 404 })
     }
     
-    return HttpResponse.json(project)
+    return HttpResponse.json({ data: project })
   }),
 
   // Error scenarios for testing

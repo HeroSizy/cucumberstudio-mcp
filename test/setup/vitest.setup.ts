@@ -1,4 +1,5 @@
 import { beforeAll, afterEach, afterAll } from 'vitest'
+
 import { startMockServer, stopMockServer, resetMockServer } from '../mocks/server.js'
 
 // Start the mock server before all tests

@@ -1,4 +1,6 @@
 import { Tool, CallToolRequest, CallToolResult, TextContent } from '@modelcontextprotocol/sdk/types.js'
+import { z } from 'zod'
+
 import { CucumberStudioApiClient } from '../api/client.js'
 import { safeExecute } from '../utils/errors.js'
 import {
@@ -8,7 +10,6 @@ import {
   ListParamsSchema,
   convertToApiParams,
 } from '../utils/validation.js'
-import { z } from 'zod'
 
 const FindByTagsSchema = z.object({
   projectId: ProjectIdSchema,

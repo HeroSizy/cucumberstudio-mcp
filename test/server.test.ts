@@ -41,15 +41,16 @@ vi.mock('@/tools/test-runs.js', () => ({
 
 // Import after mocks are set up
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
-import { CucumberStudioMcpServer } from '@/server.js'
-import { configManager } from '@/config/settings.js'
+
 import { CucumberStudioApiClient } from '@/api/client.js'
-import { validateEnvironment } from '@/utils/validation.js'
-import { StdioTransport } from '@/transports/index.js'
+import { configManager } from '@/config/settings.js'
+import { CucumberStudioMcpServer } from '@/server.js'
+import { ActionWordTools } from '@/tools/action-words.js'
 import { ProjectTools } from '@/tools/projects.js'
 import { ScenarioTools } from '@/tools/scenarios.js'
-import { ActionWordTools } from '@/tools/action-words.js'
 import { TestRunTools } from '@/tools/test-runs.js'
+import { StdioTransport } from '@/transports/index.js'
+import { validateEnvironment } from '@/utils/validation.js'
 
 describe('CucumberStudioMcpServer', () => {
   let mockServer: any
@@ -110,6 +111,13 @@ describe('CucumberStudioMcpServer', () => {
         transport: 'stdio' as const,
         port: 3000,
         host: '127.0.0.1',
+      },
+      logging: {
+        level: 'info' as const,
+        logApiResponses: false,
+        logRequestBodies: false,
+        logResponseBodies: false,
+        transport: 'stderr' as const,
       },
     }
 
