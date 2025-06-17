@@ -17,6 +17,22 @@ A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studi
 
 ## Installation
 
+### Quick Start (Recommended)
+
+Run directly with npx (no installation required):
+```bash
+npx cucumberstudio-mcp
+```
+
+Set your environment variables first:
+```bash
+export CUCUMBER_STUDIO_ACCESS_TOKEN="your_token"
+export CUCUMBER_STUDIO_CLIENT_ID="your_client_id"
+export CUCUMBER_STUDIO_UID="your_uid"
+```
+
+### Development Installation
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/HeroSizy/cucumberstudio-mcp.git
@@ -41,7 +57,21 @@ npm run build
 
 ## Docker Support
 
-### Using Docker Compose (Recommended)
+### Using Pre-built Image (Recommended)
+
+Run the official Docker image from Docker Hub:
+```bash
+# With environment file
+docker run --env-file .env herosizy/cucumberstudio-mcp
+
+# With environment variables
+docker run -e CUCUMBER_STUDIO_ACCESS_TOKEN=your_token \
+           -e CUCUMBER_STUDIO_CLIENT_ID=your_client_id \
+           -e CUCUMBER_STUDIO_UID=your_uid \
+           herosizy/cucumberstudio-mcp
+```
+
+### Using Docker Compose
 
 1. Set up environment variables:
 ```bash
@@ -49,13 +79,25 @@ cp .env.example .env
 # Edit .env with your Cucumber Studio API credentials
 ```
 
-2. Run with Docker Compose:
+2. Update docker-compose.yml to use the pre-built image:
+```yaml
+version: '3.8'
+services:
+  cucumberstudio-mcp:
+    image: herosizy/cucumberstudio-mcp
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "${MCP_PORT:-3000}:3000"
+```
+
+3. Run with Docker Compose:
 ```bash
-# Production
 docker-compose up
 ```
 
-### Using Docker directly
+### Building Locally
 
 1. Build the image:
 ```bash
@@ -120,8 +162,24 @@ npm run start:http
 
 ### Using with Claude Desktop
 
-Add this to your Claude Desktop configuration:
+#### Option 1: NPX (Recommended)
+```json
+{
+  "mcpServers": {
+    "cucumberstudio": {
+      "command": "npx",
+      "args": ["cucumberstudio-mcp"],
+      "env": {
+        "CUCUMBER_STUDIO_ACCESS_TOKEN": "your_token",
+        "CUCUMBER_STUDIO_CLIENT_ID": "your_client_id",
+        "CUCUMBER_STUDIO_UID": "your_uid"
+      }
+    }
+  }
+}
+```
 
+#### Option 2: Local Installation
 ```json
 {
   "mcpServers": {
@@ -138,8 +196,19 @@ Add this to your Claude Desktop configuration:
 }
 ```
 
-### Using with Docker in Claude Desktop
+#### Option 3: Docker Hub Image
+```json
+{
+  "mcpServers": {
+    "cucumberstudio": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "--env-file", "/path/to/.env", "herosizy/cucumberstudio-mcp"]
+    }
+  }
+}
+```
 
+#### Option 4: Local Docker Build
 ```json
 {
   "mcpServers": {
@@ -261,6 +330,40 @@ Test coverage includes:
 - API client mocking and testing
 - Configuration validation
 - Error handling scenarios
+
+## Publishing and Releases
+
+This project uses automated releases via GitHub Actions. When a version tag is pushed, it automatically:
+
+1. **Runs full test suite** - Ensures code quality and coverage
+2. **Publishes to NPM** - Makes the package available via `npx cucumberstudio-mcp`
+3. **Builds and publishes Docker image** - Pushes multi-platform images to Docker Hub
+4. **Creates GitHub release** - Generates release notes and links
+
+### Creating a Release
+
+1. Update the version in `package.json`:
+```bash
+npm version patch|minor|major
+```
+
+2. Push the tag to trigger the release:
+```bash
+git push origin --tags
+```
+
+3. The GitHub Action will automatically:
+   - Publish to NPM: https://www.npmjs.com/package/cucumberstudio-mcp
+   - Push to Docker Hub: https://hub.docker.com/r/herosizy/cucumberstudio-mcp
+   - Create a GitHub release with changelog
+
+### Required Secrets
+
+For automated publishing, the following secrets must be configured in the GitHub repository:
+
+- `NPM_TOKEN` - NPM authentication token
+- `DOCKER_USERNAME` - Docker Hub username  
+- `DOCKER_PASSWORD` - Docker Hub password or access token
 
 ## Contributing
 

@@ -4,6 +4,9 @@
   "description": "MCP server for Cucumber Studio API integration",
   "main": "build/index.js",
   "type": "module",
+  "bin": {
+    "cucumberstudio-mcp": "./build/index.js"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "start": "node build/index.js",
@@ -33,10 +36,24 @@
     "mcp",
     "cucumber",
     "testing",
-    "api"
+    "api",
+    "automation",
+    "model-context-protocol",
+    "cucumber-studio",
+    "ai",
+    "llm"
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HeroSizy/cucumberstudio-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HeroSizy/cucumberstudio-mcp/issues"
+  },
+  "homepage": "https://github.com/HeroSizy/cucumberstudio-mcp#readme",
+  "preferGlobal": true,
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "axios": "^1.6.0",
