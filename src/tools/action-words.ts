@@ -115,7 +115,7 @@ export class ActionWordTools {
     }
   }
 
-  private async listActionWords(args: unknown): Promise<CallToolResult> {
+  async listActionWords(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_action_words')
       const listParams = validateInput(ListParamsSchema, args, 'list_action_words')
@@ -152,7 +152,7 @@ export class ActionWordTools {
     }, 'listing action words')
   }
 
-  private async getActionWord(args: unknown): Promise<CallToolResult> {
+  async getActionWord(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_action_word')
       const actionWordId = validateInput(ActionWordIdSchema, (args as Record<string, unknown>)?.actionWordId, 'get_action_word')
@@ -189,7 +189,7 @@ export class ActionWordTools {
     }, 'getting action word details')
   }
 
-  private async findActionWordsByTags(args: unknown): Promise<CallToolResult> {
+  async findActionWordsByTags(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const { projectId, tags, pagination } = validateInput(
         FindActionWordsByTagsSchema,

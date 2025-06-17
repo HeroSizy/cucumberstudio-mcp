@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import { Server as HttpServer } from 'http'
 
-import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js'
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js'
 import cors from 'cors'

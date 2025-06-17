@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { config as loadDotenv } from 'dotenv'
 
-import { CucumberStudioMcpServer } from './server.js'
+import { createCucumberStudioMcpServer } from './mcp-server.js'
 import { StreamableHttpTransport, TransportType } from './transports/index.js'
 import { StderrLogger, getLogLevel } from './utils/logger.js'
 
@@ -15,57 +16,66 @@ async function main(): Promise<void> {
   loadDotenv({ path: '.env' })
   
   // Determine transport based on environment variable
-  const transport = (process.env.MCP_TRANSPORT?.toLowerCase() || 'stdio') as TransportType
+  const transportString = process.env.MCP_TRANSPORT?.toLowerCase() || 'stdio'
+  const transport = Object.values(TransportType).includes(transportString as TransportType) 
+    ? transportString as TransportType 
+    : TransportType.STDIO
+  
   const port = parseInt(process.env.MCP_PORT || '3000', 10)
   const host = process.env.MCP_HOST || '127.0.0.1'
 
   console.error(`🎯 Starting Cucumber Studio MCP Server with ${transport} transport...`)
 
-  if (transport === 'http' || transport === 'streamable-http') {
-    // HTTP/Streamable HTTP transport
-    try {
-      const logger = new StderrLogger({ level: getLogLevel(), prefix: '📡 MCP' })
-      const httpLogger = new StderrLogger({ level: getLogLevel(), prefix: '🌐 HTTP' })
-      const httpTransport = new StreamableHttpTransport(
-        () => CucumberStudioMcpServer.createServer(logger), 
-        {
-          port,
-          host,
-          cors: {
-            origin: process.env.MCP_CORS_ORIGIN === 'false' ? false : true,
-            credentials: true,
+  try {
+    switch (transport) {
+      case TransportType.HTTP:
+      case TransportType.STREAMABLE_HTTP: {
+        // HTTP/Streamable HTTP transport
+        const httpLogger = new StderrLogger({ level: getLogLevel(), prefix: '🌐 HTTP' })
+        const httpTransport = new StreamableHttpTransport(
+          createCucumberStudioMcpServer, 
+          {
+            port,
+            host,
+            cors: {
+              origin: process.env.MCP_CORS_ORIGIN === 'false' ? false : true,
+              credentials: true,
+            },
           },
-        },
-        httpLogger
-      )
+          httpLogger
+        )
 
-      await httpTransport.start()
+        await httpTransport.start()
 
-      // Handle graceful shutdown for HTTP transport
-      const shutdown = async () => {
-        console.error('🛑 Shutting down HTTP transport...')
-        await httpTransport.close()
-        process.exit(0)
+        // Handle graceful shutdown for HTTP transport
+        const shutdown = async () => {
+          console.error('🛑 Shutting down HTTP transport...')
+          await httpTransport.close()
+          process.exit(0)
+        }
+
+        process.on('SIGINT', shutdown)
+        process.on('SIGTERM', shutdown)
+        break
       }
-
-      process.on('SIGINT', shutdown)
-      process.on('SIGTERM', shutdown)
-    } catch (error) {
-      console.error('❌ HTTP transport failed to start:', error)
-      process.exit(1)
+      
+      case TransportType.STDIO:
+      default: {
+        // STDIO transport (default)
+        const server = createCucumberStudioMcpServer()
+        const stdioTransport = new StdioServerTransport()
+        
+        console.error('🚀 CucumberStudio MCP Server running on stdio')
+        console.error('📡 Transport: STDIO (standard input/output)')
+        console.error('🔄 Protocol: MCP')
+        
+        await server.connect(stdioTransport)
+        break
+      }
     }
-  } else {
-    // STDIO transport (default)
-    const logger = new StderrLogger({ level: getLogLevel(), prefix: '📡 MCP' })
-    const server = new CucumberStudioMcpServer(logger)
-
-    try {
-      await server.initialize()
-      await server.runWithTransport('stdio')
-    } catch (error) {
-      console.error('❌ STDIO transport failed to start:', error)
-      process.exit(1)
-    }
+  } catch (error) {
+    console.error(`❌ ${transport} transport failed to start:`, error)
+    process.exit(1)
   }
 }
 

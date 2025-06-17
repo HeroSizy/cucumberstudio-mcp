@@ -55,7 +55,7 @@
   "homepage": "https://github.com/HeroSizy/cucumberstudio-mcp#readme",
   "preferGlobal": true,
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.12.3",
     "axios": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",

@@ -115,7 +115,7 @@ export class ScenarioTools {
     }
   }
 
-  private async listScenarios(args: unknown): Promise<CallToolResult> {
+  async listScenarios(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_scenarios')
       const listParams = validateInput(ListParamsSchema, args, 'list_scenarios')
@@ -153,7 +153,7 @@ export class ScenarioTools {
     }, 'listing scenarios')
   }
 
-  private async getScenario(args: unknown): Promise<CallToolResult> {
+  async getScenario(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_scenario')
       const scenarioId = validateInput(ScenarioIdSchema, (args as Record<string, unknown>)?.scenarioId, 'get_scenario')
@@ -191,7 +191,7 @@ export class ScenarioTools {
     }, 'getting scenario details')
   }
 
-  private async findScenariosByTags(args: unknown): Promise<CallToolResult> {
+  async findScenariosByTags(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const { projectId, tags, pagination } = validateInput(FindByTagsSchema, args, 'find_scenarios_by_tags')
       const apiParams = convertToApiParams({ pagination })

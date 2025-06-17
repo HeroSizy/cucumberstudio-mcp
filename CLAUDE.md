@@ -34,14 +34,15 @@ This is a CucumberStudio MCP (Model Context Protocol) project. MCP servers provi
 
 ## Architecture
 
-The MCP server is built with TypeScript and follows a modular architecture:
+The MCP server is built with TypeScript and follows a clean, modular architecture:
 
-- **Entry Point**: `src/index.ts` - Main MCP server setup and transport selection
+- **Entry Point**: `src/index.ts` - Main entry point with transport selection using enum-based switch cases
+- **Server Factory**: `src/mcp-server.ts` - Direct McpServer creation with tool registration
 - **Configuration**: `src/config/settings.ts` - Environment-based configuration management
 - **Transports**: `src/transports/` - Transport layer implementations
   - `stdio.ts` - Standard input/output transport (default)
   - `http.ts` - Streamable HTTP transport with session management
-  - `index.ts` - Transport exports and types
+  - `index.ts` - Transport exports, types, and enums
 - **API Client**: `src/api/client.ts` - Cucumber Studio API client with authentication
 - **Tool Modules**: `src/tools/` - MCP tool implementations organized by feature
   - `projects.ts` - Project management tools
@@ -56,8 +57,9 @@ The MCP server is built with TypeScript and follows a modular architecture:
 - Servers typically expose tools, resources, and prompts to MCP clients
 - Common patterns include resource discovery, tool execution, and state management
 - Follow MCP specification for proper server implementation
-- **SDK Version**: Uses MCP TypeScript SDK v1.12.3 with modern `Server` class and `setRequestHandler` pattern
-- **Implementation**: Uses `ListToolsRequestSchema` and `CallToolRequestSchema` handlers instead of deprecated `registerTool` method
+- **SDK Version**: Uses MCP TypeScript SDK v1.12.3+ with modern `McpServer` class and `registerTool` pattern
+- **Implementation**: Uses modern `McpServer.registerTool()` method for clean tool registration with Zod validation
+- **Architecture**: Direct McpServer usage without unnecessary wrapper classes
 
 ## Key Resources
 

@@ -165,7 +165,7 @@ export class TestRunTools {
     }
   }
 
-  private async listTestRuns(args: unknown): Promise<CallToolResult> {
+  async listTestRuns(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_test_runs')
       const listParams = validateInput(ListParamsSchema, args, 'list_test_runs')
@@ -202,7 +202,7 @@ export class TestRunTools {
     }, 'listing test runs')
   }
 
-  private async getTestRun(args: unknown): Promise<CallToolResult> {
+  async getTestRun(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_test_run')
       const testRunId = validateInput(TestRunIdSchema, (args as Record<string, unknown>)?.testRunId, 'get_test_run')
@@ -239,7 +239,7 @@ export class TestRunTools {
     }, 'getting test run details')
   }
 
-  private async getTestExecutions(args: unknown): Promise<CallToolResult> {
+  async getTestExecutions(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_test_executions')
       const testRunId = validateInput(TestRunIdSchema, (args as Record<string, unknown>)?.testRunId, 'get_test_executions')
@@ -278,7 +278,7 @@ export class TestRunTools {
     }, 'getting test executions')
   }
 
-  private async listBuilds(args: unknown): Promise<CallToolResult> {
+  async listBuilds(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_builds')
       const listParams = validateInput(ListParamsSchema, args, 'list_builds')
@@ -314,7 +314,7 @@ export class TestRunTools {
     }, 'listing builds')
   }
 
-  private async getBuild(args: unknown): Promise<CallToolResult> {
+  async getBuild(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_build')
       const buildId = validateInput(BuildIdSchema, (args as Record<string, unknown>)?.buildId, 'get_build')
@@ -350,7 +350,7 @@ export class TestRunTools {
     }, 'getting build details')
   }
 
-  private async listExecutionEnvironments(args: unknown): Promise<CallToolResult> {
+  async listExecutionEnvironments(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_execution_environments')
       const listParams = validateInput(ListParamsSchema, args, 'list_execution_environments')

@@ -62,14 +62,14 @@ export class ProjectTools {
         return this.listProjects(request.params.arguments)
 
       case 'cucumberstudio_get_project':
-        return this.getProject(request.params.arguments)
+        return this.getProject(request.params.arguments as { projectId: string })
 
       default:
         throw new Error(`Unknown tool: ${request.params.name}`)
     }
   }
 
-  private async listProjects(args: unknown): Promise<CallToolResult> {
+  async listProjects(args: unknown = {}): Promise<CallToolResult> {
     return safeExecute(async () => {
       const params = validateInput(ListParamsSchema, args, 'list_projects')
       const apiParams = convertToApiParams(params)
@@ -107,9 +107,9 @@ export class ProjectTools {
     }, 'listing projects')
   }
 
-  private async getProject(args: unknown): Promise<CallToolResult> {
+  async getProject(args: { projectId: string }): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, (args as { projectId?: string })?.projectId, 'get_project')
+      const projectId = validateInput(ProjectIdSchema, args.projectId, 'get_project')
 
       const response = await this.apiClient.getProject(projectId)
 
