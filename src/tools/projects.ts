@@ -77,13 +77,16 @@ export class ProjectTools {
       const response = await this.apiClient.getProjects(apiParams)
 
       const projects = Array.isArray(response.data) ? response.data : [response.data]
-      const projectList = projects.map((project: Project) => ({
-        id: project.id,
-        name: project.attributes.name,
-        description: project.attributes.description || '',
-        created_at: project.attributes.created_at,
-        updated_at: project.attributes.updated_at,
-      }))
+      const projectList = projects.map((project: Project) => {
+        const attrs = project.attributes as Record<string, unknown>
+        return {
+          id: project.id,
+          name: (attrs.name as string) || 'Unknown',
+          description: (attrs.description as string) || '',
+          created_at: attrs.created_at as string,
+          updated_at: attrs.updated_at as string,
+        }
+      })
 
       return {
         content: [

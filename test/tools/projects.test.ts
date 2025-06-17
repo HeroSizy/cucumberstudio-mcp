@@ -256,7 +256,10 @@ describe('ProjectTools', () => {
         data: [
           {
             id: '1',
-            // Missing attributes
+            type: 'projects',
+            attributes: {
+              // Missing name field to test fallback
+            },
           },
         ],
       }
