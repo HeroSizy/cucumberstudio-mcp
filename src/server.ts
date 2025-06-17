@@ -71,11 +71,9 @@ export class CucumberStudioMcpServer {
         const apiLogger = new StderrLogger({ level: getLogLevel(), prefix: '🥒 API' })
         const apiClient = new CucumberStudioApiClient(config, apiLogger)
 
-        // Test connection
-        const connectionOk = await apiClient.testConnection()
-        if (!connectionOk) {
-          throw new Error('Failed to connect to Cucumber Studio API. Please check your credentials.')
-        }
+        // Note: We don't test the connection during initialization to avoid
+        // unnecessary API calls when MCP clients connect. Connection will be
+        // tested when tools are actually used.
 
         // Initialize tool classes
         const projectTools = new ProjectTools(apiClient)
@@ -151,11 +149,9 @@ export class CucumberStudioMcpServer {
       const apiLogger = new StderrLogger({ level: getLogLevel(), prefix: '🥒 API' })
       this.apiClient = new CucumberStudioApiClient(config, apiLogger)
 
-      // Test connection
-      const connectionOk = await this.apiClient.testConnection()
-      if (!connectionOk) {
-        throw new Error('Failed to connect to Cucumber Studio API. Please check your credentials.')
-      }
+      // Note: We don't test the connection during initialization to avoid
+      // unnecessary API calls when MCP clients connect. Connection will be
+      // tested when tools are actually used.
 
       // Initialize tool classes
       this.projectTools = new ProjectTools(this.apiClient)
