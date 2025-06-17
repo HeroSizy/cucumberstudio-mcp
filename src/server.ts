@@ -6,6 +6,7 @@ import { CucumberStudioApiClient } from './api/client.js'
 import { validateEnvironment } from './utils/validation.js'
 import { createMcpError } from './utils/errors.js'
 import { StdioTransport, TransportType } from './transports/index.js'
+import { Logger, createLogger } from './utils/logger.js'
 
 // Tool classes
 import { ProjectTools } from './tools/projects.js'
@@ -15,13 +16,15 @@ import { TestRunTools } from './tools/test-runs.js'
 
 export class CucumberStudioMcpServer {
   private server: Server
+  private logger: Logger
   private apiClient!: CucumberStudioApiClient
   private projectTools!: ProjectTools
   private scenarioTools!: ScenarioTools
   private actionWordTools!: ActionWordTools
   private testRunTools!: TestRunTools
 
-  constructor() {
+  constructor(logger?: Logger) {
+    this.logger = logger || createLogger('stdio')
     this.server = new Server(
       {
         name: 'cucumberstudio-mcp',
@@ -41,7 +44,7 @@ export class CucumberStudioMcpServer {
    * Factory method to create a new server instance
    * Used for HTTP transport where each session needs its own server
    */
-  static createServer(): Server {
+  static createServer(logger?: Logger): Server {
     const server = new Server(
       {
         name: 'cucumberstudio-mcp',
@@ -64,7 +67,8 @@ export class CucumberStudioMcpServer {
         const config = configManager.loadFromEnvironment()
 
         // Initialize API client
-        const apiClient = new CucumberStudioApiClient(config)
+        const serverLogger = logger || createLogger('http')
+        const apiClient = new CucumberStudioApiClient(config, serverLogger)
 
         // Test connection
         const connectionOk = await apiClient.testConnection()
@@ -143,7 +147,7 @@ export class CucumberStudioMcpServer {
       const config = configManager.loadFromEnvironment()
 
       // Initialize API client
-      this.apiClient = new CucumberStudioApiClient(config)
+      this.apiClient = new CucumberStudioApiClient(config, this.logger)
 
       // Test connection
       const connectionOk = await this.apiClient.testConnection()

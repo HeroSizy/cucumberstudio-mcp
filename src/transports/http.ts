@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js'
+import { Logger } from '../utils/logger.js'
 
 // Extend Express Request interface to include requestId
 declare global {
@@ -35,6 +36,7 @@ export class StreamableHttpTransport {
   constructor(
     createMcpServer: () => Server,
     private options: HttpTransportOptions,
+    private logger: Logger
   ) {
     this.createMcpServer = createMcpServer
     this.app = express()
@@ -48,26 +50,25 @@ export class StreamableHttpTransport {
       const requestId = randomUUID().substring(0, 8)
       req.requestId = requestId
       
-      console.error(`🌐 [${requestId}] ${req.method} ${req.path}:`, {
+      const logger = this.logger // Capture logger reference for closure
+      logger.http('debug', `[${requestId}] ${req.method} ${req.path}`, {
         headers: req.headers,
         query: req.query,
-        ip: req.ip,
-        timestamp: new Date().toISOString()
+        ip: req.ip
       })
       
       // Log response details
       const originalSend = res.send
       res.send = function(body) {
-        console.error(`📤 [${requestId}] Response ${res.statusCode}:`, {
+        logger.http('debug', `[${requestId}] Response ${res.statusCode}`, {
           statusCode: res.statusCode,
           headers: res.getHeaders(),
-          bodySize: typeof body === 'string' ? body.length : JSON.stringify(body).length,
-          timestamp: new Date().toISOString()
+          bodySize: typeof body === 'string' ? body.length : JSON.stringify(body).length
         })
         
         // Log response body for errors or when explicitly requested
         if (res.statusCode >= 400) {
-          console.error(`📄 [${requestId}] Error response body:`, 
+          logger.http('error', `[${requestId}] Error response body`, 
             typeof body === 'string' ? body : JSON.stringify(body, null, 2)
           )
         }
@@ -83,7 +84,7 @@ export class StreamableHttpTransport {
       const origin = req.get('Origin')
       if (origin && !this.isValidOrigin(origin)) {
         const requestId = req.requestId || 'unknown'
-        console.error(`🚫 [${requestId}] Invalid origin rejected:`, { origin })
+        this.logger.http('warn', `[${requestId}] Invalid origin rejected`, { origin })
         return res.status(403).json({ 
           error: 'Invalid origin',
           requestId,
@@ -157,12 +158,11 @@ export class StreamableHttpTransport {
     const sessionId = req.get('Mcp-Session-Id')
     
     // Log incoming request details
-    console.error(`🔄 [${requestId}] POST request:`, {
+    this.logger.http('debug', `[${requestId}] POST request`, {
       sessionId,
       contentType: req.get('Content-Type'),
       bodySize: JSON.stringify(req.body).length,
-      userAgent: req.get('User-Agent'),
-      timestamp: new Date().toISOString()
+      userAgent: req.get('User-Agent')
     })
 
     try {
@@ -172,7 +172,7 @@ export class StreamableHttpTransport {
       if (!transport && Array.isArray(req.body) ? isInitializeRequest(req.body[0]) : isInitializeRequest(req.body)) {
         const newSessionId = randomUUID()
 
-        console.error(`🆕 [${requestId}] Creating new session: ${newSessionId}`)
+        this.logger.http('info', `[${requestId}] Creating new session: ${newSessionId}`)
 
         // Create new MCP server instance for this session
         const mcpServer = this.createMcpServer()
@@ -189,7 +189,7 @@ export class StreamableHttpTransport {
         // Connect transport to server
         await mcpServer.connect(transport)
 
-        console.error(`✅ [${requestId}] New MCP session created: ${newSessionId}`)
+        this.logger.http('info', `[${requestId}] New MCP session created: ${newSessionId}`)
         
         // Handle the initial request
         await transport.handleRequest(req, res, req.body)
@@ -204,17 +204,17 @@ export class StreamableHttpTransport {
           requestId,
           sessionId
         }
-        console.error(`❌ [${requestId}] Session not found:`, errorResponse)
+        this.logger.http('warn', `[${requestId}] Session not found`, errorResponse)
         res.status(400).json(errorResponse)
         return
       }
 
-      console.error(`🔗 [${requestId}] Using existing session: ${sessionId}`)
+      this.logger.http('debug', `[${requestId}] Using existing session: ${sessionId}`)
       
       // Handle the request through the existing transport
       await transport.handleRequest(req, res, req.body)
       
-      console.error(`✅ [${requestId}] Request handled successfully`)
+      this.logger.http('debug', `[${requestId}] Request handled successfully`)
     } catch (error) {
       const errorDetails = {
         requestId,
@@ -229,7 +229,7 @@ export class StreamableHttpTransport {
         timestamp: new Date().toISOString()
       }
       
-      console.error(`💥 [${requestId}] Error in POST handler:`, errorDetails)
+      this.logger.http('error', `[${requestId}] Error in POST handler`, errorDetails)
       
       const errorResponse = {
         error: 'Internal server error',
@@ -238,7 +238,7 @@ export class StreamableHttpTransport {
         timestamp: new Date().toISOString()
       }
       
-      console.error(`📤 [${requestId}] Error response:`, errorResponse)
+      this.logger.http('error', `[${requestId}] POST error response`, errorResponse)
       
       res.status(500).json(errorResponse)
     }
@@ -248,24 +248,23 @@ export class StreamableHttpTransport {
     const requestId = req.requestId || randomUUID().substring(0, 8)
     const sessionId = req.get('Mcp-Session-Id')
     
-    console.error(`📥 [${requestId}] GET request:`, {
+    this.logger.http('debug', `[${requestId}] GET request`, {
       sessionId,
       lastEventId: req.get('Last-Event-ID'),
-      userAgent: req.get('User-Agent'),
-      timestamp: new Date().toISOString()
+      userAgent: req.get('User-Agent')
     })
 
     try {
       if (sessionId) {
         const transport = this.transports.get(sessionId)
         if (transport) {
-          console.error(`🔗 [${requestId}] Using existing session for GET: ${sessionId}`)
+          this.logger.http('debug', `[${requestId}] Using existing session for GET: ${sessionId}`)
           // Handle GET request for existing session (e.g., resumable connections)
           await transport.handleRequest(req, res)
-          console.error(`✅ [${requestId}] GET request handled successfully`)
+          this.logger.http('debug', `[${requestId}] GET request handled successfully`)
           return
         } else {
-          console.error(`❌ [${requestId}] Session not found for GET: ${sessionId}`)
+          this.logger.http('warn', `[${requestId}] Session not found for GET: ${sessionId}`)
         }
       }
 
@@ -294,7 +293,7 @@ export class StreamableHttpTransport {
         timestamp: new Date().toISOString()
       }
       
-      console.error(`📤 [${requestId}] Server info response:`, infoResponse)
+      this.logger.http('debug', `[${requestId}] Server info response`, infoResponse)
       res.json(infoResponse)
     } catch (error) {
       const errorDetails = {
@@ -309,7 +308,7 @@ export class StreamableHttpTransport {
         timestamp: new Date().toISOString()
       }
       
-      console.error(`💥 [${requestId}] Error in GET handler:`, errorDetails)
+      this.logger.http('error', `[${requestId}] Error in GET handler`, errorDetails)
       
       const errorResponse = {
         error: 'Internal server error',
@@ -318,7 +317,7 @@ export class StreamableHttpTransport {
         timestamp: new Date().toISOString()
       }
       
-      console.error(`📤 [${requestId}] Error response:`, errorResponse)
+      this.logger.http('error', `[${requestId}] GET error response`, errorResponse)
       res.status(500).json(errorResponse)
     }
   }
@@ -327,10 +326,9 @@ export class StreamableHttpTransport {
     const requestId = req.requestId || randomUUID().substring(0, 8)
     const sessionId = req.get('Mcp-Session-Id')
     
-    console.error(`🗑️ [${requestId}] DELETE request:`, {
+    this.logger.http('debug', `[${requestId}] DELETE request`, {
       sessionId,
-      userAgent: req.get('User-Agent'),
-      timestamp: new Date().toISOString()
+      userAgent: req.get('User-Agent')
     })
 
     if (!sessionId) {
@@ -339,7 +337,7 @@ export class StreamableHttpTransport {
         requestId,
         timestamp: new Date().toISOString()
       }
-      console.error(`❌ [${requestId}] Missing session ID:`, errorResponse)
+      this.logger.http('warn', `[${requestId}] Missing session ID`, errorResponse)
       res.status(400).json(errorResponse)
       return
     }
@@ -347,7 +345,7 @@ export class StreamableHttpTransport {
     const transport = this.transports.get(sessionId)
     if (transport) {
       try {
-        console.error(`🔄 [${requestId}] Closing session: ${sessionId}`)
+        this.logger.http('info', `[${requestId}] Closing session: ${sessionId}`)
         await transport.close()
         this.transports.delete(sessionId)
         
@@ -358,8 +356,8 @@ export class StreamableHttpTransport {
           timestamp: new Date().toISOString()
         }
         
-        console.error(`🧹 [${requestId}] MCP session closed: ${sessionId}`)
-        console.error(`📤 [${requestId}] Success response:`, successResponse)
+        this.logger.http('info', `[${requestId}] MCP session closed: ${sessionId}`)
+        this.logger.http('debug', `[${requestId}] Success response`, successResponse)
         res.json(successResponse)
       } catch (error) {
         const errorDetails = {
@@ -373,7 +371,7 @@ export class StreamableHttpTransport {
           timestamp: new Date().toISOString()
         }
         
-        console.error(`💥 [${requestId}] Error closing session:`, errorDetails)
+        this.logger.http('error', `[${requestId}] Error closing session`, errorDetails)
         
         const errorResponse = {
           error: 'Error closing session',
@@ -383,7 +381,7 @@ export class StreamableHttpTransport {
           timestamp: new Date().toISOString()
         }
         
-        console.error(`📤 [${requestId}] Error response:`, errorResponse)
+        this.logger.http('error', `[${requestId}] DELETE error response`, errorResponse)
         res.status(500).json(errorResponse)
       }
     } else {
@@ -394,8 +392,8 @@ export class StreamableHttpTransport {
         timestamp: new Date().toISOString()
       }
       
-      console.error(`❌ [${requestId}] Session not found:`, errorResponse)
-      console.error(`📤 [${requestId}] Not found response:`, errorResponse)
+      this.logger.http('warn', `[${requestId}] Session not found`, errorResponse)
+      this.logger.http('debug', `[${requestId}] Not found response`, errorResponse)
       res.status(404).json(errorResponse)
     }
   }
@@ -415,11 +413,9 @@ export class StreamableHttpTransport {
           this.options.port,
           this.options.host || '127.0.0.1', // Bind to localhost for security
           () => {
-            console.error(
-              `🌐 Streamable HTTP transport listening on ${this.options.host || '127.0.0.1'}:${this.options.port}`,
-            )
-            console.error(`📡 MCP endpoint: http://${this.options.host || 'localhost'}:${this.options.port}/mcp`)
-            console.error(`🔄 Protocol: MCP 2025-03-26 with Streamable HTTP`)
+            this.logger.transport('info', `Streamable HTTP transport listening on ${this.options.host || '127.0.0.1'}:${this.options.port}`)
+            this.logger.transport('info', `MCP endpoint: http://${this.options.host || 'localhost'}:${this.options.port}/mcp`)
+            this.logger.transport('info', `Protocol: MCP 2025-03-26 with Streamable HTTP`)
             resolve()
           },
         )
@@ -436,7 +432,7 @@ export class StreamableHttpTransport {
   async close(): Promise<void> {
     // Close all active transports
     const closePromises = Array.from(this.transports.values()).map((transport) =>
-      transport.close().catch((error) => console.error('Error closing transport:', error)),
+      transport.close().catch((error) => this.logger.transport('error', 'Error closing transport', error)),
     )
 
     await Promise.all(closePromises)
@@ -445,7 +441,7 @@ export class StreamableHttpTransport {
     return new Promise((resolve) => {
       if (this.httpServer) {
         this.httpServer.close(() => {
-          console.error('🛑 Streamable HTTP transport closed')
+          this.logger.transport('info', 'Streamable HTTP transport closed')
           resolve()
         })
       } else {

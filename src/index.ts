@@ -2,6 +2,7 @@
 
 import { CucumberStudioMcpServer } from './server.js'
 import { StreamableHttpTransport, TransportType } from './transports/index.js'
+import { createLogger } from './utils/logger.js'
 
 /**
  * Main entry point for the Cucumber Studio MCP Server
@@ -18,14 +19,19 @@ async function main(): Promise<void> {
   if (transport === 'http' || transport === 'streamable-http') {
     // HTTP/Streamable HTTP transport
     try {
-      const httpTransport = new StreamableHttpTransport(() => CucumberStudioMcpServer.createServer(), {
-        port,
-        host,
-        cors: {
-          origin: process.env.MCP_CORS_ORIGIN === 'false' ? false : true,
-          credentials: true,
+      const logger = createLogger(transport)
+      const httpTransport = new StreamableHttpTransport(
+        () => CucumberStudioMcpServer.createServer(logger), 
+        {
+          port,
+          host,
+          cors: {
+            origin: process.env.MCP_CORS_ORIGIN === 'false' ? false : true,
+            credentials: true,
+          },
         },
-      })
+        logger
+      )
 
       await httpTransport.start()
 
@@ -44,7 +50,8 @@ async function main(): Promise<void> {
     }
   } else {
     // STDIO transport (default)
-    const server = new CucumberStudioMcpServer()
+    const logger = createLogger('stdio')
+    const server = new CucumberStudioMcpServer(logger)
 
     try {
       await server.initialize()

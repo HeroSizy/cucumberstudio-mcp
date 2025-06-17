@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { config as loadDotenv } from 'dotenv'
 
 // Configuration schema for type safety and validation
 const ConfigSchema = z.object({
@@ -15,6 +16,14 @@ const ConfigSchema = z.object({
     port: z.number().int().min(1).max(65535).default(3000),
     host: z.string().default('127.0.0.1'),
   }),
+  logging: z.object({
+    level: z.enum(['error', 'warn', 'info', 'debug', 'trace']).default('info'),
+    logApiResponses: z.boolean().default(false),
+    logRequestBodies: z.boolean().default(false),
+    logResponseBodies: z.boolean().default(false),
+    transport: z.enum(['console', 'file', 'stderr', 'none']).default('stderr'),
+    filePath: z.string().optional(),
+  }),
 })
 
 export type Config = z.infer<typeof ConfigSchema>
@@ -26,6 +35,8 @@ export class ConfigManager {
    * Load configuration from environment variables
    */
   public loadFromEnvironment(): Config {
+    // Auto-load .env file if it exists
+    loadDotenv({ path: '.env' })
     const rawConfig = {
       cucumberStudio: {
         baseUrl: process.env.CUCUMBER_STUDIO_BASE_URL,
@@ -39,6 +50,14 @@ export class ConfigManager {
         transport: process.env.MCP_TRANSPORT,
         port: process.env.MCP_PORT ? parseInt(process.env.MCP_PORT, 10) : undefined,
         host: process.env.MCP_HOST,
+      },
+      logging: {
+        level: process.env.LOG_LEVEL,
+        logApiResponses: process.env.LOG_API_RESPONSES === 'true',
+        logRequestBodies: process.env.LOG_REQUEST_BODIES === 'true',
+        logResponseBodies: process.env.LOG_RESPONSE_BODIES === 'true',
+        transport: process.env.LOG_TRANSPORT,
+        filePath: process.env.LOG_FILE,
       },
     }
 

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import { Config } from '../config/settings.js'
 import { CucumberStudioResponse, CucumberStudioError, ListParams } from './types.js'
+import { Logger } from '../utils/logger.js'
 
 export class CucumberStudioApiError extends Error {
   constructor(
@@ -16,7 +17,10 @@ export class CucumberStudioApiError extends Error {
 export class CucumberStudioApiClient {
   private client: AxiosInstance
 
-  constructor(private config: Config) {
+  constructor(
+    private config: Config,
+    private logger: Logger
+  ) {
     this.client = axios.create({
       baseURL: config.cucumberStudio.baseUrl,
       headers: {
@@ -29,13 +33,58 @@ export class CucumberStudioApiClient {
       timeout: 30000, // 30 second timeout
     })
 
-    // Add response interceptor for error handling
+    // Add request interceptor for logging
+    this.client.interceptors.request.use(
+      (config) => {
+        this.logger.api('debug', `🚀 Request: ${config.method?.toUpperCase()} ${config.url}`, {
+          headers: this.sanitizeHeaders(config.headers),
+          params: config.params,
+          bodySize: config.data ? JSON.stringify(config.data).length : 0,
+        })
+        
+        if (this.getLoggingConfig().logRequestBodies && config.data) {
+          this.logger.api('trace', '📤 Request Body:', config.data)
+        }
+        
+        return config
+      },
+      (error) => {
+        this.logger.api('error', '❌ Request Error:', error)
+        return Promise.reject(error)
+      }
+    )
+
+    // Add response interceptor for logging and error handling
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        this.logger.api('debug', `✅ Response: ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+          dataSize: response.data ? JSON.stringify(response.data).length : 0,
+        })
+        
+        if (this.getLoggingConfig().logApiResponses || this.getLoggingConfig().logResponseBodies) {
+          this.logger.api('debug', '📥 Cucumber Studio Response:', {
+            status: response.status,
+            url: response.config.url,
+            data: response.data
+          })
+        }
+        
+        return response
+      },
       (error) => {
         if (error.response) {
           const status = error.response.status
           const data = error.response.data as CucumberStudioError
+
+          this.logger.api('error', `❌ API Error: ${status} ${error.config?.method?.toUpperCase()} ${error.config?.url}`, {
+            status,
+            statusText: error.response.statusText,
+            data,
+            headers: error.response.headers
+          })
 
           let message = `API request failed with status ${status}`
           if (data?.errors?.length > 0) {
@@ -44,12 +93,47 @@ export class CucumberStudioApiClient {
 
           throw new CucumberStudioApiError(message, status, data)
         } else if (error.request) {
+          this.logger.api('error', '🔌 No Response:', { 
+            url: error.config?.url,
+            timeout: error.code === 'ECONNABORTED'
+          })
           throw new CucumberStudioApiError('No response received from Cucumber Studio API')
         } else {
+          this.logger.api('error', '⚙️ Request Setup Error:', error.message)
           throw new CucumberStudioApiError(`Request setup failed: ${error.message}`)
         }
       },
     )
+  }
+
+  /**
+   * Get logging configuration with safe defaults
+   */
+  private getLoggingConfig() {
+    return this.config.logging || {
+      level: 'info' as const,
+      logApiResponses: false,
+      logRequestBodies: false,
+      logResponseBodies: false,
+    }
+  }
+
+  /**
+   * Sanitize headers to avoid logging sensitive information
+   */
+  private sanitizeHeaders(headers: any): any {
+    if (!headers) return headers
+    
+    const sanitized = { ...headers }
+    const sensitiveKeys = ['access-token', 'authorization', 'cookie', 'x-api-key']
+    
+    for (const key of sensitiveKeys) {
+      if (key in sanitized) {
+        sanitized[key] = '***REDACTED***'
+      }
+    }
+    
+    return sanitized
   }
 
   /**
