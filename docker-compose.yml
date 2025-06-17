@@ -3,57 +3,18 @@ version: '3.8'
 services:
   cucumberstudio-mcp:
     build: .
-    environment:
-      - CUCUMBER_STUDIO_ACCESS_TOKEN=${CUCUMBER_STUDIO_ACCESS_TOKEN}
-      - CUCUMBER_STUDIO_CLIENT_ID=${CUCUMBER_STUDIO_CLIENT_ID}
-      - CUCUMBER_STUDIO_UID=${CUCUMBER_STUDIO_UID}
-      - CUCUMBER_STUDIO_BASE_URL=${CUCUMBER_STUDIO_BASE_URL:-https://studio-api.cucumberstudio.com}
-      - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
-      - NODE_ENV=production
+    env_file:
+      - .env
     restart: unless-stopped
-    volumes:
-      # Mount local .env file if it exists
-      - ./.env:/app/.env:ro
-    # Expose port only for HTTP transport
     ports:
       - "${MCP_PORT:-3000}:3000"
-    
-  # HTTP-only service
-  cucumberstudio-mcp-http:
-    build: .
-    environment:
-      - CUCUMBER_STUDIO_ACCESS_TOKEN=${CUCUMBER_STUDIO_ACCESS_TOKEN}
-      - CUCUMBER_STUDIO_CLIENT_ID=${CUCUMBER_STUDIO_CLIENT_ID}
-      - CUCUMBER_STUDIO_UID=${CUCUMBER_STUDIO_UID}
-      - CUCUMBER_STUDIO_BASE_URL=${CUCUMBER_STUDIO_BASE_URL:-https://studio-api.cucumberstudio.com}
-      - MCP_TRANSPORT=http
-      - MCP_PORT=3000
-      - MCP_HOST=0.0.0.0
-      - NODE_ENV=production
-    restart: unless-stopped
-    volumes:
-      - ./.env:/app/.env:ro
-    ports:
-      - "${MCP_PORT:-3000}:3000"
-    profiles:
-      - http
-    
-  # Development service
-  cucumberstudio-mcp-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    environment:
-      - CUCUMBER_STUDIO_ACCESS_TOKEN=${CUCUMBER_STUDIO_ACCESS_TOKEN}
-      - CUCUMBER_STUDIO_CLIENT_ID=${CUCUMBER_STUDIO_CLIENT_ID}
-      - CUCUMBER_STUDIO_UID=${CUCUMBER_STUDIO_UID}
-      - CUCUMBER_STUDIO_BASE_URL=${CUCUMBER_STUDIO_BASE_URL:-https://studio-api.cucumberstudio.com}
-      - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
-      - NODE_ENV=development
-    volumes:
-      - ./src:/app/src:ro
-      - ./package.json:/app/package.json:ro
-      - ./tsconfig.json:/app/tsconfig.json:ro
-      - ./.env:/app/.env:ro
-    profiles:
-      - dev
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  default:
+    name: cucumberstudio-mcp-network
