@@ -7,10 +7,10 @@ describe('ConfigManager', () => {
   beforeEach(() => {
     originalEnv = { ...process.env }
     // Clear environment
-    delete process.env.CUCUMBER_STUDIO_ACCESS_TOKEN
-    delete process.env.CUCUMBER_STUDIO_CLIENT_ID
-    delete process.env.CUCUMBER_STUDIO_UID
-    delete process.env.CUCUMBER_STUDIO_BASE_URL
+    delete process.env.CUCUMBERSTUDIO_ACCESS_TOKEN
+    delete process.env.CUCUMBERSTUDIO_CLIENT_ID
+    delete process.env.CUCUMBERSTUDIO_UID
+    delete process.env.CUCUMBERSTUDIO_BASE_URL
     delete process.env.MCP_SERVER_NAME
     delete process.env.MCP_SERVER_VERSION
     delete process.env.MCP_TRANSPORT
@@ -24,9 +24,9 @@ describe('ConfigManager', () => {
 
   describe('loadFromEnvironment', () => {
     it('should load valid configuration from environment variables', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 
       const manager = new ConfigManager()
       const config = manager.loadFromEnvironment()
@@ -49,10 +49,10 @@ describe('ConfigManager', () => {
     })
 
     it('should use custom base URL when provided', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
-      process.env.CUCUMBER_STUDIO_BASE_URL = 'https://custom-api.example.com'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_BASE_URL = 'https://custom-api.example.com'
 
       const manager = new ConfigManager()
       const config = manager.loadFromEnvironment()
@@ -61,9 +61,9 @@ describe('ConfigManager', () => {
     })
 
     it('should use custom server configuration when provided', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
       process.env.MCP_SERVER_NAME = 'custom-server'
       process.env.MCP_SERVER_VERSION = '2.0.0'
       process.env.MCP_TRANSPORT = 'http'
@@ -83,39 +83,39 @@ describe('ConfigManager', () => {
     })
 
     it('should throw error when access token is missing', () => {
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 
       const manager = new ConfigManager()
 
       expect(() => manager.loadFromEnvironment()).toThrow(
-        /Configuration validation failed.*CUCUMBER_STUDIO_ACCESS_TOKEN/,
+        /Configuration validation failed.*CUCUMBERSTUDIO_ACCESS_TOKEN/,
       )
     })
 
     it('should throw error when client ID is missing', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 
       const manager = new ConfigManager()
 
-      expect(() => manager.loadFromEnvironment()).toThrow(/Configuration validation failed.*CUCUMBER_STUDIO_CLIENT_ID/)
+      expect(() => manager.loadFromEnvironment()).toThrow(/Configuration validation failed.*CUCUMBERSTUDIO_CLIENT_ID/)
     })
 
     it('should throw error when UID is missing', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
 
       const manager = new ConfigManager()
 
-      expect(() => manager.loadFromEnvironment()).toThrow(/Configuration validation failed.*CUCUMBER_STUDIO_UID/)
+      expect(() => manager.loadFromEnvironment()).toThrow(/Configuration validation failed.*CUCUMBERSTUDIO_UID/)
     })
 
     it('should throw error when base URL is invalid', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
-      process.env.CUCUMBER_STUDIO_BASE_URL = 'invalid-url'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_BASE_URL = 'invalid-url'
 
       const manager = new ConfigManager()
 
@@ -123,9 +123,9 @@ describe('ConfigManager', () => {
     })
 
     it('should throw error when transport is invalid', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
       process.env.MCP_TRANSPORT = 'invalid-transport'
 
       const manager = new ConfigManager()
@@ -134,9 +134,9 @@ describe('ConfigManager', () => {
     })
 
     it('should throw error when port is invalid', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
       process.env.MCP_PORT = 'invalid-port'
 
       const manager = new ConfigManager()
@@ -147,9 +147,9 @@ describe('ConfigManager', () => {
 
   describe('getConfig', () => {
     it('should return config after loading', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 
       const manager = new ConfigManager()
       const config1 = manager.loadFromEnvironment()
@@ -167,9 +167,9 @@ describe('ConfigManager', () => {
 
   describe('validate', () => {
     it('should return true when config is valid', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client-id'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client-id'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 
       const manager = new ConfigManager()
       manager.loadFromEnvironment()

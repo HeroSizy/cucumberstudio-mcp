@@ -35,9 +35,9 @@ npx cucumberstudio-mcp
 
 Set your environment variables first:
 ```bash
-export CUCUMBER_STUDIO_ACCESS_TOKEN="your_token"
-export CUCUMBER_STUDIO_CLIENT_ID="your_client_id"
-export CUCUMBER_STUDIO_UID="your_uid"
+export CUCUMBERSTUDIO_ACCESS_TOKEN="your_token"
+export CUCUMBERSTUDIO_CLIENT_ID="your_client_id"
+export CUCUMBERSTUDIO_UID="your_uid"
 ```
 
 ### Development Installation
@@ -74,9 +74,9 @@ Run the official Docker image from Docker Hub:
 docker run --env-file .env herosizy/cucumberstudio-mcp
 
 # With environment variables
-docker run -e CUCUMBER_STUDIO_ACCESS_TOKEN=your_token \
-           -e CUCUMBER_STUDIO_CLIENT_ID=your_client_id \
-           -e CUCUMBER_STUDIO_UID=your_uid \
+docker run -e CUCUMBERSTUDIO_ACCESS_TOKEN=your_token \
+           -e CUCUMBERSTUDIO_CLIENT_ID=your_client_id \
+           -e CUCUMBERSTUDIO_UID=your_uid \
            herosizy/cucumberstudio-mcp
 ```
 
@@ -125,12 +125,12 @@ The Docker setup includes health checks and automatic restarts for production us
 The server requires Cucumber Studio API credentials. Get these from your Cucumber Studio account settings:
 
 ### Required Environment Variables
-- `CUCUMBER_STUDIO_ACCESS_TOKEN` - Your API access token
-- `CUCUMBER_STUDIO_CLIENT_ID` - Your client ID  
-- `CUCUMBER_STUDIO_UID` - Your user ID
+- `CUCUMBERSTUDIO_ACCESS_TOKEN` - Your API access token
+- `CUCUMBERSTUDIO_CLIENT_ID` - Your client ID  
+- `CUCUMBERSTUDIO_UID` - Your user ID
 
 ### Optional Configuration
-- `CUCUMBER_STUDIO_BASE_URL` - API base URL (default: https://studio.cucumberstudio.com/api)
+- `CUCUMBERSTUDIO_BASE_URL` - API base URL (default: https://studio.cucumberstudio.com/api)
 - `MCP_TRANSPORT` - Transport type: `stdio` (default), `http`, or `streamable-http`
 - `MCP_PORT` - HTTP transport port (default: 3000)
 - `MCP_HOST` - HTTP transport host (default: 0.0.0.0)
@@ -179,9 +179,9 @@ npm run start:http
       "command": "npx",
       "args": ["cucumberstudio-mcp"],
       "env": {
-        "CUCUMBER_STUDIO_ACCESS_TOKEN": "your_token",
-        "CUCUMBER_STUDIO_CLIENT_ID": "your_client_id",
-        "CUCUMBER_STUDIO_UID": "your_uid"
+        "CUCUMBERSTUDIO_ACCESS_TOKEN": "your_token",
+        "CUCUMBERSTUDIO_CLIENT_ID": "your_client_id",
+        "CUCUMBERSTUDIO_UID": "your_uid"
       }
     }
   }
@@ -196,9 +196,9 @@ npm run start:http
       "command": "node",
       "args": ["/path/to/cucumberstudio-mcp/build/index.js"],
       "env": {
-        "CUCUMBER_STUDIO_ACCESS_TOKEN": "your_token",
-        "CUCUMBER_STUDIO_CLIENT_ID": "your_client_id",
-        "CUCUMBER_STUDIO_UID": "your_uid"
+        "CUCUMBERSTUDIO_ACCESS_TOKEN": "your_token",
+        "CUCUMBERSTUDIO_CLIENT_ID": "your_client_id",
+        "CUCUMBERSTUDIO_UID": "your_uid"
       }
     }
   }

@@ -82,7 +82,7 @@ export function validateInput<T>(schema: z.ZodSchema<T>, input: unknown, context
  * Validate that required environment variables are present
  */
 export function validateEnvironment(): void {
-  const required = ['CUCUMBER_STUDIO_ACCESS_TOKEN', 'CUCUMBER_STUDIO_CLIENT_ID', 'CUCUMBER_STUDIO_UID']
+  const required = ['CUCUMBERSTUDIO_ACCESS_TOKEN', 'CUCUMBERSTUDIO_CLIENT_ID', 'CUCUMBERSTUDIO_UID']
 
   const missing = required.filter((envVar) => !process.env[envVar])
 

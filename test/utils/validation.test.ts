@@ -196,58 +196,58 @@ describe('validation utilities', () => {
     })
 
     it('should pass when all required environment variables are present', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 
       expect(() => validateEnvironment()).not.toThrow()
     })
 
     it('should throw McpError when access token is missing', () => {
-      delete process.env.CUCUMBER_STUDIO_ACCESS_TOKEN
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client'
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      delete process.env.CUCUMBERSTUDIO_ACCESS_TOKEN
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client'
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 
       expect(() => validateEnvironment()).toThrow(McpError)
-      expect(() => validateEnvironment()).toThrow(/CUCUMBER_STUDIO_ACCESS_TOKEN/)
+      expect(() => validateEnvironment()).toThrow(/CUCUMBERSTUDIO_ACCESS_TOKEN/)
     })
 
     it('should throw McpError when client ID is missing', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      delete process.env.CUCUMBER_STUDIO_CLIENT_ID
-      process.env.CUCUMBER_STUDIO_UID = 'test-uid'
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      delete process.env.CUCUMBERSTUDIO_CLIENT_ID
+      process.env.CUCUMBERSTUDIO_UID = 'test-uid'
 
       expect(() => validateEnvironment()).toThrow(McpError)
-      expect(() => validateEnvironment()).toThrow(/CUCUMBER_STUDIO_CLIENT_ID/)
+      expect(() => validateEnvironment()).toThrow(/CUCUMBERSTUDIO_CLIENT_ID/)
     })
 
     it('should throw McpError when UID is missing', () => {
-      process.env.CUCUMBER_STUDIO_ACCESS_TOKEN = 'test-token'
-      process.env.CUCUMBER_STUDIO_CLIENT_ID = 'test-client'
-      delete process.env.CUCUMBER_STUDIO_UID
+      process.env.CUCUMBERSTUDIO_ACCESS_TOKEN = 'test-token'
+      process.env.CUCUMBERSTUDIO_CLIENT_ID = 'test-client'
+      delete process.env.CUCUMBERSTUDIO_UID
 
       expect(() => validateEnvironment()).toThrow(McpError)
-      expect(() => validateEnvironment()).toThrow(/CUCUMBER_STUDIO_UID/)
+      expect(() => validateEnvironment()).toThrow(/CUCUMBERSTUDIO_UID/)
     })
 
     it('should throw McpError when multiple variables are missing', () => {
-      delete process.env.CUCUMBER_STUDIO_ACCESS_TOKEN
-      delete process.env.CUCUMBER_STUDIO_CLIENT_ID
-      delete process.env.CUCUMBER_STUDIO_UID
+      delete process.env.CUCUMBERSTUDIO_ACCESS_TOKEN
+      delete process.env.CUCUMBERSTUDIO_CLIENT_ID
+      delete process.env.CUCUMBERSTUDIO_UID
 
       try {
         validateEnvironment()
       } catch (error) {
         expect(error).toBeInstanceOf(McpError)
         const mcpError = error as McpError
-        expect(mcpError.message).toContain('CUCUMBER_STUDIO_ACCESS_TOKEN')
-        expect(mcpError.message).toContain('CUCUMBER_STUDIO_CLIENT_ID')
-        expect(mcpError.message).toContain('CUCUMBER_STUDIO_UID')
+        expect(mcpError.message).toContain('CUCUMBERSTUDIO_ACCESS_TOKEN')
+        expect(mcpError.message).toContain('CUCUMBERSTUDIO_CLIENT_ID')
+        expect(mcpError.message).toContain('CUCUMBERSTUDIO_UID')
       }
     })
 
     it('should have correct error code', () => {
-      delete process.env.CUCUMBER_STUDIO_ACCESS_TOKEN
+      delete process.env.CUCUMBERSTUDIO_ACCESS_TOKEN
 
       try {
         validateEnvironment()

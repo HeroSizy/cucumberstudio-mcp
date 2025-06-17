@@ -39,10 +39,10 @@ export class ConfigManager {
     loadDotenv({ path: '.env' })
     const rawConfig = {
       cucumberStudio: {
-        baseUrl: process.env.CUCUMBER_STUDIO_BASE_URL,
-        accessToken: process.env.CUCUMBER_STUDIO_ACCESS_TOKEN,
-        clientId: process.env.CUCUMBER_STUDIO_CLIENT_ID,
-        uid: process.env.CUCUMBER_STUDIO_UID,
+        baseUrl: process.env.CUCUMBERSTUDIO_BASE_URL,
+        accessToken: process.env.CUCUMBERSTUDIO_ACCESS_TOKEN,
+        clientId: process.env.CUCUMBERSTUDIO_CLIENT_ID,
+        uid: process.env.CUCUMBERSTUDIO_UID,
       },
       server: {
         name: process.env.MCP_SERVER_NAME,
@@ -70,7 +70,7 @@ export class ConfigManager {
         throw new Error(
           `Configuration validation failed. Missing or invalid fields: ${missingFields}. ` +
             'Please ensure all required environment variables are set: ' +
-            'CUCUMBER_STUDIO_ACCESS_TOKEN, CUCUMBER_STUDIO_CLIENT_ID, CUCUMBER_STUDIO_UID',
+            'CUCUMBERSTUDIO_ACCESS_TOKEN, CUCUMBERSTUDIO_CLIENT_ID, CUCUMBERSTUDIO_UID',
         )
       }
       throw error

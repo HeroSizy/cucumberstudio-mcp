@@ -116,9 +116,9 @@ src/
 ## Environment Setup
 
 Copy `.env.example` to `.env` and configure your Cucumber Studio API credentials:
-- `CUCUMBER_STUDIO_ACCESS_TOKEN` - Your API access token
-- `CUCUMBER_STUDIO_CLIENT_ID` - Your client ID  
-- `CUCUMBER_STUDIO_UID` - Your user ID
+- `CUCUMBERSTUDIO_ACCESS_TOKEN` - Your API access token
+- `CUCUMBERSTUDIO_CLIENT_ID` - Your client ID  
+- `CUCUMBERSTUDIO_UID` - Your user ID
 
 ### Transport Configuration
 - `MCP_TRANSPORT` - Transport type: `stdio` (default), `http`, or `streamable-http`
