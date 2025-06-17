@@ -1,0 +1,90 @@
+{
+  "name": "cucumberstudio-mcp",
+  "version": "1.0.3",
+  "description": "MCP server for Cucumber Studio API integration",
+  "main": "build/index.js",
+  "type": "module",
+  "bin": {
+    "cucumberstudio-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "start": "node build/index.js",
+    "start:http": "MCP_TRANSPORT=http node build/index.js",
+    "dev": "tsx --watch -r tsconfig-paths/register src/index.ts",
+    "dev:http": "MCP_TRANSPORT=http tsx --watch -r tsconfig-paths/register src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:ui-coverage": "vitest --ui --coverage",
+    "lint": "eslint src test --ext .ts",
+    "lint:fix": "eslint src test --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "docker:build": "docker build -t cucumberstudio-mcp .",
+    "docker:build:dev": "docker build -f Dockerfile.dev -t cucumberstudio-mcp:dev .",
+    "docker:run": "docker run --env-file .env cucumberstudio-mcp",
+    "docker:run:dev": "docker run --env-file .env -v $(pwd)/src:/app/src cucumberstudio-mcp:dev",
+    "docker:compose:up": "docker-compose up",
+    "docker:compose:up:dev": "docker-compose --profile dev up cucumberstudio-mcp-dev",
+    "docker:compose:down": "docker-compose down",
+    "docker:compose:build": "docker-compose build"
+  },
+  "keywords": [
+    "mcp",
+    "cucumber",
+    "testing",
+    "api",
+    "automation",
+    "model-context-protocol",
+    "cucumber-studio",
+    "ai",
+    "llm"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HeroSizy/cucumberstudio-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HeroSizy/cucumberstudio-mcp/issues"
+  },
+  "homepage": "https://github.com/HeroSizy/cucumberstudio-mcp#readme",
+  "preferGlobal": true,
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.18.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.0",
+    "@types/express": "^4.17.0",
+    "@types/node": "^22.15.30",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "@vitest/coverage-v8": "^3.2.2",
+    "@vitest/ui": "^3.2.2",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^4.4.3",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "msw": "^2.10.2",
+    "prettier": "^3.5.3",
+    "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.8.3",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
