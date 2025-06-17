@@ -6,7 +6,7 @@ on:
       - 'v*' # Trigger on version tags like v1.0.0, v1.2.3, etc.
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   REGISTRY: docker.io
   IMAGE_NAME: herosizy/cucumberstudio-mcp
 
@@ -75,7 +75,15 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Update package.json version
-        run: npm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          TARGET_VERSION=${{ steps.get_version.outputs.VERSION }}
+          if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
+            echo "Updating version from $CURRENT_VERSION to $TARGET_VERSION"
+            npm version $TARGET_VERSION --no-git-tag-version
+          else
+            echo "Version $TARGET_VERSION already matches package.json, skipping update"
+          fi
 
       - name: Publish to NPM
         run: npm publish --access public
