@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "start": "node build/index.js",
     "start:http": "MCP_TRANSPORT=http node build/index.js",
     "dev": "tsx -r tsconfig-paths/register src/index.ts",

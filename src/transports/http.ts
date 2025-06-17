@@ -115,7 +115,9 @@ export class StreamableHttpTransport {
         const mcpServer = this.createMcpServer()
 
         // Create streamable HTTP transport
-        transport = new StreamableHTTPServerTransport(req, res)
+        transport = new StreamableHTTPServerTransport({
+          sessionIdGenerator: () => newSessionId,
+        })
         this.transports.set(newSessionId, transport)
 
         // Set session ID in response header
@@ -125,19 +127,23 @@ export class StreamableHttpTransport {
         await mcpServer.connect(transport)
 
         console.error(`✅ New MCP session created: ${newSessionId}`)
+        
+        // Handle the initial request
+        await transport.handleRequest(req, res, req.body)
         return
       }
 
       // Use existing transport
       if (!transport) {
-        return res.status(400).json({
+        res.status(400).json({
           error: 'Session not found. Please initialize first.',
           code: 'SESSION_NOT_FOUND',
         })
+        return
       }
 
       // Handle the request through the existing transport
-      await transport.handleRequest(req, res)
+      await transport.handleRequest(req, res, req.body)
     } catch (error) {
       console.error('Error in POST handler:', error)
       res.status(500).json({
@@ -187,9 +193,10 @@ export class StreamableHttpTransport {
     const sessionId = req.get('Mcp-Session-Id')
 
     if (!sessionId) {
-      return res.status(400).json({
+      res.status(400).json({
         error: 'Session ID required for DELETE requests',
       })
+      return
     }
 
     const transport = this.transports.get(sessionId)
