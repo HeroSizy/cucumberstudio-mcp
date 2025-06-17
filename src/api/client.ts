@@ -36,20 +36,20 @@ export class CucumberStudioApiClient {
     // Add request interceptor for logging
     this.client.interceptors.request.use(
       (config) => {
-        this.logger.api('debug', `🚀 Request: ${config.method?.toUpperCase()} ${config.url}`, {
+        this.logger.debug(`🚀 Request: ${config.method?.toUpperCase()} ${config.url}`, {
           headers: this.sanitizeHeaders(config.headers),
           params: config.params,
           bodySize: config.data ? JSON.stringify(config.data).length : 0,
         })
         
         if (this.getLoggingConfig().logRequestBodies && config.data) {
-          this.logger.api('trace', '📤 Request Body:', config.data)
+          this.logger.trace('📤 Request Body:', config.data)
         }
         
         return config
       },
       (error) => {
-        this.logger.api('error', '❌ Request Error:', error)
+        this.logger.error('❌ Request Error:', error)
         return Promise.reject(error)
       }
     )
@@ -57,7 +57,7 @@ export class CucumberStudioApiClient {
     // Add response interceptor for logging and error handling
     this.client.interceptors.response.use(
       (response) => {
-        this.logger.api('debug', `✅ Response: ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`, {
+        this.logger.debug(`✅ Response: ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`, {
           status: response.status,
           statusText: response.statusText,
           headers: response.headers,
@@ -65,7 +65,7 @@ export class CucumberStudioApiClient {
         })
         
         if (this.getLoggingConfig().logApiResponses || this.getLoggingConfig().logResponseBodies) {
-          this.logger.api('debug', '📥 Cucumber Studio Response:', {
+          this.logger.debug('📥 Cucumber Studio Response:', {
             status: response.status,
             url: response.config.url,
             data: response.data
@@ -79,7 +79,7 @@ export class CucumberStudioApiClient {
           const status = error.response.status
           const data = error.response.data as CucumberStudioError
 
-          this.logger.api('error', `❌ API Error: ${status} ${error.config?.method?.toUpperCase()} ${error.config?.url}`, {
+          this.logger.error(`❌ API Error: ${status} ${error.config?.method?.toUpperCase()} ${error.config?.url}`, {
             status,
             statusText: error.response.statusText,
             data,
@@ -93,13 +93,13 @@ export class CucumberStudioApiClient {
 
           throw new CucumberStudioApiError(message, status, data)
         } else if (error.request) {
-          this.logger.api('error', '🔌 No Response:', { 
+          this.logger.error('🔌 No Response:', { 
             url: error.config?.url,
             timeout: error.code === 'ECONNABORTED'
           })
           throw new CucumberStudioApiError('No response received from Cucumber Studio API')
         } else {
-          this.logger.api('error', '⚙️ Request Setup Error:', error.message)
+          this.logger.error('⚙️ Request Setup Error:', error.message)
           throw new CucumberStudioApiError(`Request setup failed: ${error.message}`)
         }
       },

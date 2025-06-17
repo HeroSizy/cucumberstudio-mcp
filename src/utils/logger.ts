@@ -1,14 +1,18 @@
-import * as fs from 'fs'
-import * as path from 'path'
-
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace'
+
+export interface Logger {
+  error(message: string, meta?: any): void
+  warn(message: string, meta?: any): void
+  info(message: string, meta?: any): void
+  debug(message: string, meta?: any): void
+  trace(message: string, meta?: any): void
+}
 
 export interface LoggerConfig {
   level: LogLevel
-  transport: 'console' | 'file' | 'stderr' | 'none'
-  filePath?: string
-  enableColors?: boolean
+  prefix?: string
   enableTimestamp?: boolean
+  enableColors?: boolean
 }
 
 const LOG_LEVELS: Record<LogLevel, number> = {
@@ -29,29 +33,18 @@ const LOG_COLORS: Record<LogLevel, string> = {
 
 const RESET_COLOR = '\x1b[0m'
 
-export class Logger {
-  private config: LoggerConfig
-  private fileHandle: fs.WriteStream | null = null
+/**
+ * Logger implementation that outputs to stderr
+ * Safe for use with STDIO MCP transport as it won't interfere with stdout protocol
+ */
+export class StderrLogger implements Logger {
+  private config: LoggerConfig & { enableTimestamp: boolean; enableColors: boolean }
 
   constructor(config: LoggerConfig) {
     this.config = {
-      enableColors: true,
       enableTimestamp: true,
-      ...config
-    }
-    
-    if (this.config.transport === 'file' && this.config.filePath) {
-      // Ensure directory exists
-      const dir = path.dirname(this.config.filePath)
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true })
-      }
-      
-      // Create file write stream
-      this.fileHandle = fs.createWriteStream(this.config.filePath, { 
-        flags: 'a', // append mode
-        encoding: 'utf8' 
-      })
+      enableColors: true,
+      ...config,
     }
   }
 
@@ -59,127 +52,84 @@ export class Logger {
     return LOG_LEVELS[level] <= LOG_LEVELS[this.config.level]
   }
 
-  private formatMessage(level: LogLevel, message: string, ...args: any[]): string {
+  private formatMessage(level: LogLevel, message: string, meta?: any): string {
     let formatted = ''
-    
+
     // Add timestamp if enabled
     if (this.config.enableTimestamp) {
       formatted += `[${new Date().toISOString()}] `
     }
-    
+
     // Add level with color if enabled
     const levelUpper = level.toUpperCase().padEnd(5)
-    if (this.config.enableColors && this.config.transport !== 'file') {
+    if (this.config.enableColors) {
       formatted += `${LOG_COLORS[level]}${levelUpper}${RESET_COLOR} `
     } else {
       formatted += `${levelUpper} `
     }
-    
+
+    // Add prefix if configured
+    if (this.config.prefix) {
+      formatted += `${this.config.prefix} `
+    }
+
     // Add message
     formatted += message
-    
-    // Add arguments
-    if (args.length > 0) {
-      const formattedArgs = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(' ')
-      formatted += ` ${formattedArgs}`
+
+    // Add metadata
+    if (meta !== undefined) {
+      if (typeof meta === 'object') {
+        formatted += ` ${JSON.stringify(meta)}`
+      } else {
+        formatted += ` ${String(meta)}`
+      }
     }
-    
+
     return formatted
   }
 
-  private writeLog(level: LogLevel, message: string, ...args: any[]): void {
+  private writeLog(level: LogLevel, message: string, meta?: any): void {
     if (!this.shouldLog(level)) return
     
-    const formatted = this.formatMessage(level, message, ...args)
-    
-    switch (this.config.transport) {
-      case 'console':
-        console.log(formatted)
-        break
-      case 'stderr':
-        // Use stderr for logging to avoid interfering with STDIO transport
-        console.error(formatted)
-        break
-      case 'file':
-        if (this.fileHandle) {
-          this.fileHandle.write(formatted + '\n')
-        }
-        break
-      case 'none':
-        // No-op
-        break
-    }
+    const formatted = this.formatMessage(level, message, meta)
+    console.error(formatted)
   }
 
-  // Cleanup method
-  close(): void {
-    if (this.fileHandle) {
-      this.fileHandle.end()
-      this.fileHandle = null
-    }
+  error(message: string, meta?: any): void {
+    this.writeLog('error', message, meta)
   }
 
-  error(message: string, ...args: any[]): void {
-    this.writeLog('error', message, ...args)
+  warn(message: string, meta?: any): void {
+    this.writeLog('warn', message, meta)
   }
 
-  warn(message: string, ...args: any[]): void {
-    this.writeLog('warn', message, ...args)
+  info(message: string, meta?: any): void {
+    this.writeLog('info', message, meta)
   }
 
-  info(message: string, ...args: any[]): void {
-    this.writeLog('info', message, ...args)
+  debug(message: string, meta?: any): void {
+    this.writeLog('debug', message, meta)
   }
 
-  debug(message: string, ...args: any[]): void {
-    this.writeLog('debug', message, ...args)
-  }
-
-  trace(message: string, ...args: any[]): void {
-    this.writeLog('trace', message, ...args)
-  }
-
-  // Specific logging methods for different components
-  http(level: LogLevel, message: string, data?: any): void {
-    const prefix = '🌐 HTTP'
-    this.writeLog(level, `${prefix} ${message}`, data)
-  }
-
-  api(level: LogLevel, message: string, data?: any): void {
-    const prefix = '🥒 API'
-    this.writeLog(level, `${prefix} ${message}`, data)
-  }
-
-  mcp(level: LogLevel, message: string, data?: any): void {
-    const prefix = '📡 MCP'
-    this.writeLog(level, `${prefix} ${message}`, data)
-  }
-
-  transport(level: LogLevel, message: string, data?: any): void {
-    const prefix = '🚌 TRANSPORT'
-    this.writeLog(level, `${prefix} ${message}`, data)
+  trace(message: string, meta?: any): void {
+    this.writeLog('trace', message, meta)
   }
 }
 
-// Factory function to create logger based on transport type
-export function createLogger(transportType: 'stdio' | 'http' | 'streamable-http', config?: Partial<LoggerConfig>): Logger {
-  const baseConfig: LoggerConfig = {
-    level: (process.env.LOG_LEVEL as LogLevel) || 'info',
-    transport: 'stderr', // Default to stderr
-    enableColors: true,
-    enableTimestamp: true,
-    ...config
-  }
+/**
+ * No-op logger for testing or when logging is disabled
+ */
+export class NoopLogger implements Logger {
+  error(): void {}
+  warn(): void {}
+  info(): void {}
+  debug(): void {}
+  trace(): void {}
+}
 
-  // For STDIO transport, we need to be careful not to interfere with the protocol
-  if (transportType === 'stdio') {
-    baseConfig.transport = process.env.LOG_FILE ? 'file' : 'stderr'
-    if (baseConfig.transport === 'file' && !baseConfig.filePath) {
-      baseConfig.filePath = process.env.LOG_FILE || './logs/mcp-server.log'
-    }
-  }
-
-  return new Logger(baseConfig)
+/**
+ * Helper to get log level from environment
+ */
+export function getLogLevel(): LogLevel {
+  return (process.env.LOG_LEVEL as LogLevel) || 'info'
 }

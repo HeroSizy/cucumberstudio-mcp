@@ -6,7 +6,7 @@ import { CucumberStudioApiClient } from './api/client.js'
 import { validateEnvironment } from './utils/validation.js'
 import { createMcpError } from './utils/errors.js'
 import { StdioTransport, TransportType } from './transports/index.js'
-import { Logger, createLogger } from './utils/logger.js'
+import { Logger, StderrLogger, getLogLevel } from './utils/logger.js'
 
 // Tool classes
 import { ProjectTools } from './tools/projects.js'
@@ -24,7 +24,7 @@ export class CucumberStudioMcpServer {
   private testRunTools!: TestRunTools
 
   constructor(logger?: Logger) {
-    this.logger = logger || createLogger('stdio')
+    this.logger = logger || new StderrLogger({ level: getLogLevel(), prefix: '📡 MCP' })
     this.server = new Server(
       {
         name: 'cucumberstudio-mcp',
@@ -67,8 +67,9 @@ export class CucumberStudioMcpServer {
         const config = configManager.loadFromEnvironment()
 
         // Initialize API client
-        const serverLogger = logger || createLogger('http')
-        const apiClient = new CucumberStudioApiClient(config, serverLogger)
+        const serverLogger = logger || new StderrLogger({ level: getLogLevel(), prefix: '📡 MCP' })
+        const apiLogger = new StderrLogger({ level: getLogLevel(), prefix: '🥒 API' })
+        const apiClient = new CucumberStudioApiClient(config, apiLogger)
 
         // Test connection
         const connectionOk = await apiClient.testConnection()
@@ -146,8 +147,9 @@ export class CucumberStudioMcpServer {
       // Load configuration
       const config = configManager.loadFromEnvironment()
 
-      // Initialize API client
-      this.apiClient = new CucumberStudioApiClient(config, this.logger)
+      // Initialize API client with API-specific logger
+      const apiLogger = new StderrLogger({ level: getLogLevel(), prefix: '🥒 API' })
+      this.apiClient = new CucumberStudioApiClient(config, apiLogger)
 
       // Test connection
       const connectionOk = await this.apiClient.testConnection()

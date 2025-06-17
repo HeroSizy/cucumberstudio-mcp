@@ -2,7 +2,7 @@
 
 import { CucumberStudioMcpServer } from './server.js'
 import { StreamableHttpTransport, TransportType } from './transports/index.js'
-import { createLogger } from './utils/logger.js'
+import { StderrLogger, getLogLevel } from './utils/logger.js'
 
 /**
  * Main entry point for the Cucumber Studio MCP Server
@@ -19,7 +19,8 @@ async function main(): Promise<void> {
   if (transport === 'http' || transport === 'streamable-http') {
     // HTTP/Streamable HTTP transport
     try {
-      const logger = createLogger(transport)
+      const logger = new StderrLogger({ level: getLogLevel(), prefix: '📡 MCP' })
+      const httpLogger = new StderrLogger({ level: getLogLevel(), prefix: '🌐 HTTP' })
       const httpTransport = new StreamableHttpTransport(
         () => CucumberStudioMcpServer.createServer(logger), 
         {
@@ -30,7 +31,7 @@ async function main(): Promise<void> {
             credentials: true,
           },
         },
-        logger
+        httpLogger
       )
 
       await httpTransport.start()
@@ -50,7 +51,7 @@ async function main(): Promise<void> {
     }
   } else {
     // STDIO transport (default)
-    const logger = createLogger('stdio')
+    const logger = new StderrLogger({ level: getLogLevel(), prefix: '📡 MCP' })
     const server = new CucumberStudioMcpServer(logger)
 
     try {
