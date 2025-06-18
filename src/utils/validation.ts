@@ -1,6 +1,8 @@
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
 
+import { MAX_PAGE_SIZE } from '../constants.js'
+
 // Common validation schemas
 export const ProjectIdSchema = z.string().min(1, 'Project ID is required')
 export const ScenarioIdSchema = z.string().min(1, 'Scenario ID is required')
@@ -13,7 +15,7 @@ export const BuildIdSchema = z.string().min(1, 'Build ID is required')
 export const PaginationSchema = z
   .object({
     page: z.number().int().min(1).optional(),
-    pageSize: z.number().int().min(1).max(100).optional(),
+    pageSize: z.number().int().min(1).max(MAX_PAGE_SIZE).optional(),
   })
   .optional()
 

@@ -241,8 +241,16 @@ export class TestRunTools {
 
   async getTestExecutions(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_test_executions')
-      const testRunId = validateInput(TestRunIdSchema, (args as Record<string, unknown>)?.testRunId, 'get_test_executions')
+      const projectId = validateInput(
+        ProjectIdSchema,
+        (args as Record<string, unknown>)?.projectId,
+        'get_test_executions',
+      )
+      const testRunId = validateInput(
+        TestRunIdSchema,
+        (args as Record<string, unknown>)?.testRunId,
+        'get_test_executions',
+      )
       const listParams = validateInput(ListParamsSchema, args, 'get_test_executions')
       const apiParams = convertToApiParams(listParams)
 
@@ -352,7 +360,11 @@ export class TestRunTools {
 
   async listExecutionEnvironments(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_execution_environments')
+      const projectId = validateInput(
+        ProjectIdSchema,
+        (args as Record<string, unknown>)?.projectId,
+        'list_execution_environments',
+      )
       const listParams = validateInput(ListParamsSchema, args, 'list_execution_environments')
       const apiParams = convertToApiParams(listParams)
 

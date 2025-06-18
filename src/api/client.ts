@@ -1,9 +1,22 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
 
 import { Config } from '../config/settings.js'
+import { API_VERSION_HEADER, API_TIMEOUT, REDACTED_STRING } from '../constants.js'
 import { Logger } from '../utils/logger.js'
 
-import { CucumberStudioResponse, CucumberStudioError, ListParams, Project, Scenario, ActionWord, Folder, TestRun, TestExecution, Build, ExecutionEnvironment } from './types.js'
+import {
+  CucumberStudioResponse,
+  CucumberStudioError,
+  ListParams,
+  Project,
+  Scenario,
+  ActionWord,
+  Folder,
+  TestRun,
+  TestExecution,
+  Build,
+  ExecutionEnvironment,
+} from './types.js'
 
 export class CucumberStudioApiError extends Error {
   constructor(
@@ -21,18 +34,18 @@ export class CucumberStudioApiClient {
 
   constructor(
     private config: Config,
-    private logger: Logger
+    private logger: Logger,
   ) {
     this.client = axios.create({
       baseURL: config.cucumberStudio.baseUrl,
       headers: {
-        Accept: 'application/vnd.api+json; version=1',
+        Accept: API_VERSION_HEADER,
         'Content-Type': 'application/json',
         'access-token': config.cucumberStudio.accessToken,
         client: config.cucumberStudio.clientId,
         uid: config.cucumberStudio.uid,
       },
-      timeout: 30000, // 30 second timeout
+      timeout: API_TIMEOUT,
     })
 
     // Add request interceptor for logging
@@ -43,37 +56,40 @@ export class CucumberStudioApiClient {
           params: config.params,
           bodySize: config.data ? JSON.stringify(config.data).length : 0,
         })
-        
+
         if (this.getLoggingConfig().logRequestBodies && config.data) {
           this.logger.trace('📤 Request Body:', config.data)
         }
-        
+
         return config
       },
       (error) => {
         this.logger.error('❌ Request Error:', error)
         return Promise.reject(error)
-      }
+      },
     )
 
     // Add response interceptor for logging and error handling
     this.client.interceptors.response.use(
       (response) => {
-        this.logger.debug(`✅ Response: ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: response.headers,
-          dataSize: response.data ? JSON.stringify(response.data).length : 0,
-        })
-        
+        this.logger.debug(
+          `✅ Response: ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`,
+          {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+            dataSize: response.data ? JSON.stringify(response.data).length : 0,
+          },
+        )
+
         if (this.getLoggingConfig().logApiResponses || this.getLoggingConfig().logResponseBodies) {
           this.logger.debug('📥 Cucumber Studio Response:', {
             status: response.status,
             url: response.config.url,
-            data: response.data
+            data: response.data,
           })
         }
-        
+
         return response
       },
       (error) => {
@@ -85,7 +101,7 @@ export class CucumberStudioApiClient {
             status,
             statusText: error.response.statusText,
             data,
-            headers: error.response.headers
+            headers: error.response.headers,
           })
 
           let message = `API request failed with status ${status}`
@@ -95,9 +111,9 @@ export class CucumberStudioApiClient {
 
           throw new CucumberStudioApiError(message, status, data)
         } else if (error.request) {
-          this.logger.error('🔌 No Response:', { 
+          this.logger.error('🔌 No Response:', {
             url: error.config?.url,
-            timeout: error.code === 'ECONNABORTED'
+            timeout: error.code === 'ECONNABORTED',
           })
           throw new CucumberStudioApiError('No response received from Cucumber Studio API')
         } else {
@@ -112,12 +128,14 @@ export class CucumberStudioApiClient {
    * Get logging configuration with safe defaults
    */
   private getLoggingConfig() {
-    return this.config.logging || {
-      level: 'info' as const,
-      logApiResponses: false,
-      logRequestBodies: false,
-      logResponseBodies: false,
-    }
+    return (
+      this.config.logging || {
+        level: 'info' as const,
+        logApiResponses: false,
+        logRequestBodies: false,
+        logResponseBodies: false,
+      }
+    )
   }
 
   /**
@@ -125,16 +143,16 @@ export class CucumberStudioApiClient {
    */
   private sanitizeHeaders(headers: Record<string, unknown>): Record<string, unknown> {
     if (!headers) return headers
-    
+
     const sanitized = { ...headers }
     const sensitiveKeys = ['access-token', 'authorization', 'cookie', 'x-api-key']
-    
+
     for (const key of sensitiveKeys) {
       if (key in sanitized) {
-        sanitized[key] = '***REDACTED***'
+        sanitized[key] = REDACTED_STRING
       }
     }
-    
+
     return sanitized
   }
 
@@ -164,7 +182,11 @@ export class CucumberStudioApiClient {
     return this.get<Scenario>(`/projects/${projectId}/scenarios/${scenarioId}`)
   }
 
-  async findScenariosByTag(projectId: string, tags: string, params?: ListParams): Promise<CucumberStudioResponse<Scenario[]>> {
+  async findScenariosByTag(
+    projectId: string,
+    tags: string,
+    params?: ListParams,
+  ): Promise<CucumberStudioResponse<Scenario[]>> {
     return this.get<Scenario[]>(`/projects/${projectId}/scenarios/find_by_tags`, {
       ...params,
       'filter[tags]': tags,
@@ -180,7 +202,11 @@ export class CucumberStudioApiClient {
     return this.get<ActionWord>(`/projects/${projectId}/actionwords/${actionWordId}`)
   }
 
-  async findActionWordsByTag(projectId: string, tags: string, params?: ListParams): Promise<CucumberStudioResponse<ActionWord[]>> {
+  async findActionWordsByTag(
+    projectId: string,
+    tags: string,
+    params?: ListParams,
+  ): Promise<CucumberStudioResponse<ActionWord[]>> {
     return this.get<ActionWord[]>(`/projects/${projectId}/actionwords/find_by_tags`, {
       ...params,
       'filter[tags]': tags,
@@ -196,11 +222,19 @@ export class CucumberStudioApiClient {
     return this.get<Folder>(`/projects/${projectId}/folders/${folderId}`)
   }
 
-  async getFolderChildren(projectId: string, folderId: string, params?: ListParams): Promise<CucumberStudioResponse<Folder[]>> {
+  async getFolderChildren(
+    projectId: string,
+    folderId: string,
+    params?: ListParams,
+  ): Promise<CucumberStudioResponse<Folder[]>> {
     return this.get<Folder[]>(`/projects/${projectId}/folders/${folderId}/children`, params)
   }
 
-  async getFolderScenarios(projectId: string, folderId: string, params?: ListParams): Promise<CucumberStudioResponse<Scenario[]>> {
+  async getFolderScenarios(
+    projectId: string,
+    folderId: string,
+    params?: ListParams,
+  ): Promise<CucumberStudioResponse<Scenario[]>> {
     return this.get<Scenario[]>(`/projects/${projectId}/folders/${folderId}/scenarios`, params)
   }
 
@@ -213,7 +247,11 @@ export class CucumberStudioApiClient {
     return this.get<TestRun>(`/projects/${projectId}/test_runs/${testRunId}`)
   }
 
-  async getTestExecutions(projectId: string, testRunId: string, params?: ListParams): Promise<CucumberStudioResponse<TestExecution[]>> {
+  async getTestExecutions(
+    projectId: string,
+    testRunId: string,
+    params?: ListParams,
+  ): Promise<CucumberStudioResponse<TestExecution[]>> {
     return this.get<TestExecution[]>(`/projects/${projectId}/test_runs/${testRunId}/test_executions`, params)
   }
 
@@ -227,7 +265,10 @@ export class CucumberStudioApiClient {
   }
 
   // EXECUTION ENVIRONMENT ENDPOINTS
-  async getExecutionEnvironments(projectId: string, params?: ListParams): Promise<CucumberStudioResponse<ExecutionEnvironment[]>> {
+  async getExecutionEnvironments(
+    projectId: string,
+    params?: ListParams,
+  ): Promise<CucumberStudioResponse<ExecutionEnvironment[]>> {
     return this.get<ExecutionEnvironment[]>(`/projects/${projectId}/execution_environments`, params)
   }
 

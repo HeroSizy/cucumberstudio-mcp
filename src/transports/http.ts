@@ -7,6 +7,7 @@ import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js'
 import cors from 'cors'
 import express, { Express } from 'express'
 
+import { SERVER_NAME, SERVER_VERSION, PROTOCOL_VERSION, JSON_BODY_LIMIT, DEFAULT_CORS_ORIGINS } from '../constants.js'
 import { Logger } from '../utils/logger.js'
 
 // Extend Express Request interface to include requestId
@@ -39,7 +40,7 @@ export class StreamableHttpTransport {
   constructor(
     createMcpServer: () => McpServer,
     private options: HttpTransportOptions,
-    private logger: Logger
+    private logger: Logger,
   ) {
     this.createMcpServer = createMcpServer
     this.app = express()
@@ -52,33 +53,33 @@ export class StreamableHttpTransport {
     this.app.use((req, res, next) => {
       const requestId = randomUUID().substring(0, 8)
       req.requestId = requestId
-      
+
       const logger = this.logger // Capture logger reference for closure
       logger.debug(`[${requestId}] ${req.method} ${req.path}`, {
         headers: req.headers,
         query: req.query,
-        ip: req.ip
+        ip: req.ip,
       })
-      
+
       // Log response details
       const originalSend = res.send
-      res.send = function(body) {
-        logger.debug( `[${requestId}] Response ${res.statusCode}`, {
+      res.send = function (body) {
+        logger.debug(`[${requestId}] Response ${res.statusCode}`, {
           statusCode: res.statusCode,
           headers: res.getHeaders(),
-          bodySize: typeof body === 'string' ? body.length : JSON.stringify(body).length
+          bodySize: typeof body === 'string' ? body.length : JSON.stringify(body).length,
         })
-        
+
         // Log response body for errors or when explicitly requested
         if (res.statusCode >= 400) {
-          logger.error( `[${requestId}] Error response body`, {
-            body: typeof body === 'string' ? body : JSON.stringify(body, null, 2)
+          logger.error(`[${requestId}] Error response body`, {
+            body: typeof body === 'string' ? body : JSON.stringify(body, null, 2),
           })
         }
-        
+
         return originalSend.call(this, body)
       }
-      
+
       next()
     })
 
@@ -87,11 +88,11 @@ export class StreamableHttpTransport {
       const origin = req.get('Origin')
       if (origin && !this.isValidOrigin(origin)) {
         const requestId = req.requestId || 'unknown'
-        this.logger.warn( `[${requestId}] Invalid origin rejected`, { origin })
-        return res.status(403).json({ 
+        this.logger.warn(`[${requestId}] Invalid origin rejected`, { origin })
+        return res.status(403).json({
           error: 'Invalid origin',
           requestId,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         })
       }
       next()
@@ -108,7 +109,7 @@ export class StreamableHttpTransport {
     )
 
     // Parse JSON bodies with size limit
-    this.app.use(express.json({ limit: '10mb' }))
+    this.app.use(express.json({ limit: JSON_BODY_LIMIT }))
 
     // Health check endpoint
     this.app.get('/health', (req, res) => {
@@ -140,10 +141,10 @@ export class StreamableHttpTransport {
     // MCP server info endpoint
     this.app.get('/mcp/info', (req, res) => {
       res.json({
-        name: 'Cucumber Studio MCP Server',
-        version: '1.0.0',
+        name: SERVER_NAME,
+        version: SERVER_VERSION,
         transport: 'streamable-http',
-        protocol: '2025-03-26',
+        protocol: PROTOCOL_VERSION,
         capabilities: {
           tools: true,
           resources: false,
@@ -159,13 +160,13 @@ export class StreamableHttpTransport {
   private async handlePost(req: express.Request, res: express.Response): Promise<void> {
     const requestId = req.requestId || randomUUID().substring(0, 8)
     const sessionId = req.get('Mcp-Session-Id')
-    
+
     // Log incoming request details
-    this.logger.debug( `[${requestId}] POST request`, {
+    this.logger.debug(`[${requestId}] POST request`, {
       sessionId,
       contentType: req.get('Content-Type'),
       bodySize: JSON.stringify(req.body).length,
-      userAgent: req.get('User-Agent')
+      userAgent: req.get('User-Agent'),
     })
 
     try {
@@ -175,7 +176,7 @@ export class StreamableHttpTransport {
       if (!transport && Array.isArray(req.body) ? isInitializeRequest(req.body[0]) : isInitializeRequest(req.body)) {
         const newSessionId = randomUUID()
 
-        this.logger.info( `[${requestId}] Creating new session: ${newSessionId}`)
+        this.logger.info(`[${requestId}] Creating new session: ${newSessionId}`)
 
         // Create new MCP server instance for this session
         const mcpServer = this.createMcpServer()
@@ -192,8 +193,8 @@ export class StreamableHttpTransport {
         // Connect transport to server
         await mcpServer.connect(transport)
 
-        this.logger.info( `[${requestId}] New MCP session created: ${newSessionId}`)
-        
+        this.logger.info(`[${requestId}] New MCP session created: ${newSessionId}`)
+
         // Handle the initial request
         await transport.handleRequest(req, res, req.body)
         return
@@ -205,44 +206,47 @@ export class StreamableHttpTransport {
           error: 'Session not found. Please initialize first.',
           code: 'SESSION_NOT_FOUND',
           requestId,
-          sessionId
+          sessionId,
         }
-        this.logger.warn( `[${requestId}] Session not found`, errorResponse)
+        this.logger.warn(`[${requestId}] Session not found`, errorResponse)
         res.status(400).json(errorResponse)
         return
       }
 
-      this.logger.debug( `[${requestId}] Using existing session: ${sessionId}`)
-      
+      this.logger.debug(`[${requestId}] Using existing session: ${sessionId}`)
+
       // Handle the request through the existing transport
       await transport.handleRequest(req, res, req.body)
-      
-      this.logger.debug( `[${requestId}] Request handled successfully`)
+
+      this.logger.debug(`[${requestId}] Request handled successfully`)
     } catch (error) {
       const errorDetails = {
         requestId,
         sessionId,
-        error: error instanceof Error ? {
-          name: error.name,
-          message: error.message,
-          stack: error.stack
-        } : String(error),
+        error:
+          error instanceof Error
+            ? {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+              }
+            : String(error),
         requestBody: req.body,
         headers: req.headers,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-      
-      this.logger.error( `[${requestId}] Error in POST handler`, errorDetails)
-      
+
+      this.logger.error(`[${requestId}] Error in POST handler`, errorDetails)
+
       const errorResponse = {
         error: 'Internal server error',
         message: error instanceof Error ? error.message : String(error),
         requestId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-      
-      this.logger.error( `[${requestId}] POST error response`, errorResponse)
-      
+
+      this.logger.error(`[${requestId}] POST error response`, errorResponse)
+
       res.status(500).json(errorResponse)
     }
   }
@@ -250,33 +254,33 @@ export class StreamableHttpTransport {
   private async handleGet(req: express.Request, res: express.Response): Promise<void> {
     const requestId = req.requestId || randomUUID().substring(0, 8)
     const sessionId = req.get('Mcp-Session-Id')
-    
-    this.logger.debug( `[${requestId}] GET request`, {
+
+    this.logger.debug(`[${requestId}] GET request`, {
       sessionId,
       lastEventId: req.get('Last-Event-ID'),
-      userAgent: req.get('User-Agent')
+      userAgent: req.get('User-Agent'),
     })
 
     try {
       if (sessionId) {
         const transport = this.transports.get(sessionId)
         if (transport) {
-          this.logger.debug( `[${requestId}] Using existing session for GET: ${sessionId}`)
+          this.logger.debug(`[${requestId}] Using existing session for GET: ${sessionId}`)
           // Handle GET request for existing session (e.g., resumable connections)
           await transport.handleRequest(req, res)
-          this.logger.debug( `[${requestId}] GET request handled successfully`)
+          this.logger.debug(`[${requestId}] GET request handled successfully`)
           return
         } else {
-          this.logger.warn( `[${requestId}] Session not found for GET: ${sessionId}`)
+          this.logger.warn(`[${requestId}] Session not found for GET: ${sessionId}`)
         }
       }
 
       // Return server information for GET requests without session
       const infoResponse = {
-        name: 'Cucumber Studio MCP Server',
-        version: '1.0.0',
+        name: SERVER_NAME,
+        version: SERVER_VERSION,
         transport: 'streamable-http',
-        protocol: '2024-11-05',
+        protocol: PROTOCOL_VERSION,
         endpoint: '/mcp',
         methods: ['POST', 'GET', 'DELETE'],
         capabilities: {
@@ -293,34 +297,37 @@ export class StreamableHttpTransport {
           cleanup: 'DELETE /mcp with Mcp-Session-Id header',
         },
         requestId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-      
-      this.logger.debug( `[${requestId}] Server info response`, infoResponse)
+
+      this.logger.debug(`[${requestId}] Server info response`, infoResponse)
       res.json(infoResponse)
     } catch (error) {
       const errorDetails = {
         requestId,
         sessionId,
-        error: error instanceof Error ? {
-          name: error.name,
-          message: error.message,
-          stack: error.stack
-        } : String(error),
+        error:
+          error instanceof Error
+            ? {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+              }
+            : String(error),
         headers: req.headers,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-      
-      this.logger.error( `[${requestId}] Error in GET handler`, errorDetails)
-      
+
+      this.logger.error(`[${requestId}] Error in GET handler`, errorDetails)
+
       const errorResponse = {
         error: 'Internal server error',
         message: error instanceof Error ? error.message : String(error),
         requestId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-      
-      this.logger.error( `[${requestId}] GET error response`, errorResponse)
+
+      this.logger.error(`[${requestId}] GET error response`, errorResponse)
       res.status(500).json(errorResponse)
     }
   }
@@ -328,19 +335,19 @@ export class StreamableHttpTransport {
   private async handleDelete(req: express.Request, res: express.Response): Promise<void> {
     const requestId = req.requestId || randomUUID().substring(0, 8)
     const sessionId = req.get('Mcp-Session-Id')
-    
-    this.logger.debug( `[${requestId}] DELETE request`, {
+
+    this.logger.debug(`[${requestId}] DELETE request`, {
       sessionId,
-      userAgent: req.get('User-Agent')
+      userAgent: req.get('User-Agent'),
     })
 
     if (!sessionId) {
       const errorResponse = {
         error: 'Session ID required for DELETE requests',
         requestId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-      this.logger.warn( `[${requestId}] Missing session ID`, errorResponse)
+      this.logger.warn(`[${requestId}] Missing session ID`, errorResponse)
       res.status(400).json(errorResponse)
       return
     }
@@ -348,43 +355,46 @@ export class StreamableHttpTransport {
     const transport = this.transports.get(sessionId)
     if (transport) {
       try {
-        this.logger.info( `[${requestId}] Closing session: ${sessionId}`)
+        this.logger.info(`[${requestId}] Closing session: ${sessionId}`)
         await transport.close()
         this.transports.delete(sessionId)
-        
+
         const successResponse = {
           message: 'Session closed successfully',
           sessionId,
           requestId,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         }
-        
-        this.logger.info( `[${requestId}] MCP session closed: ${sessionId}`)
-        this.logger.debug( `[${requestId}] Success response`, successResponse)
+
+        this.logger.info(`[${requestId}] MCP session closed: ${sessionId}`)
+        this.logger.debug(`[${requestId}] Success response`, successResponse)
         res.json(successResponse)
       } catch (error) {
         const errorDetails = {
           requestId,
           sessionId,
-          error: error instanceof Error ? {
-            name: error.name,
-            message: error.message,
-            stack: error.stack
-          } : String(error),
-          timestamp: new Date().toISOString()
+          error:
+            error instanceof Error
+              ? {
+                  name: error.name,
+                  message: error.message,
+                  stack: error.stack,
+                }
+              : String(error),
+          timestamp: new Date().toISOString(),
         }
-        
-        this.logger.error( `[${requestId}] Error closing session`, errorDetails)
-        
+
+        this.logger.error(`[${requestId}] Error closing session`, errorDetails)
+
         const errorResponse = {
           error: 'Error closing session',
           message: error instanceof Error ? error.message : String(error),
           requestId,
           sessionId,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         }
-        
-        this.logger.error( `[${requestId}] DELETE error response`, errorResponse)
+
+        this.logger.error(`[${requestId}] DELETE error response`, errorResponse)
         res.status(500).json(errorResponse)
       }
     } else {
@@ -392,11 +402,11 @@ export class StreamableHttpTransport {
         error: 'Session not found',
         sessionId,
         requestId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-      
-      this.logger.warn( `[${requestId}] Session not found`, errorResponse)
-      this.logger.debug( `[${requestId}] Not found response`, errorResponse)
+
+      this.logger.warn(`[${requestId}] Session not found`, errorResponse)
+      this.logger.debug(`[${requestId}] Not found response`, errorResponse)
       res.status(404).json(errorResponse)
     }
   }
@@ -404,7 +414,7 @@ export class StreamableHttpTransport {
   private isValidOrigin(origin: string): boolean {
     // Implement your origin validation logic here
     // For development, allow localhost and 127.0.0.1
-    const allowedOrigins = ['localhost', '127.0.0.1', '0.0.0.0']
+    const allowedOrigins = DEFAULT_CORS_ORIGINS
 
     return allowedOrigins.some((allowed) => origin.includes(allowed))
   }
@@ -414,9 +424,11 @@ export class StreamableHttpTransport {
       try {
         this.httpServer = this.app.listen(
           this.options.port,
-          this.options.host || '127.0.0.1', // Bind to localhost for security
+          this.options.host || DEFAULT_CORS_ORIGINS[1], // Bind to localhost for security
           () => {
-            this.logger.info(`Streamable HTTP transport listening on ${this.options.host || '127.0.0.1'}:${this.options.port}`)
+            this.logger.info(
+              `Streamable HTTP transport listening on ${this.options.host || '127.0.0.1'}:${this.options.port}`,
+            )
             this.logger.info(`MCP endpoint: http://${this.options.host || 'localhost'}:${this.options.port}/mcp`)
             this.logger.info(`Protocol: MCP 2025-03-26 with Streamable HTTP`)
             resolve()

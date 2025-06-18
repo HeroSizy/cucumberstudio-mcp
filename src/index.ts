@@ -14,13 +14,13 @@ import { StderrLogger, getLogLevel } from './utils/logger.js'
 async function main(): Promise<void> {
   // Load .env file first to ensure environment variables are available
   loadDotenv({ path: '.env' })
-  
+
   // Determine transport based on environment variable
   const transportString = process.env.MCP_TRANSPORT?.toLowerCase() || 'stdio'
-  const transport = Object.values(TransportType).includes(transportString as TransportType) 
-    ? transportString as TransportType 
+  const transport = Object.values(TransportType).includes(transportString as TransportType)
+    ? (transportString as TransportType)
     : TransportType.STDIO
-  
+
   const port = parseInt(process.env.MCP_PORT || '3000', 10)
   const host = process.env.MCP_HOST || '127.0.0.1'
 
@@ -33,7 +33,7 @@ async function main(): Promise<void> {
         // HTTP/Streamable HTTP transport
         const httpLogger = new StderrLogger({ level: getLogLevel(), prefix: '🌐 HTTP' })
         const httpTransport = new StreamableHttpTransport(
-          createCucumberStudioMcpServer, 
+          createCucumberStudioMcpServer,
           {
             port,
             host,
@@ -42,7 +42,7 @@ async function main(): Promise<void> {
               credentials: true,
             },
           },
-          httpLogger
+          httpLogger,
         )
 
         await httpTransport.start()
@@ -58,17 +58,17 @@ async function main(): Promise<void> {
         process.on('SIGTERM', shutdown)
         break
       }
-      
+
       case TransportType.STDIO:
       default: {
         // STDIO transport (default)
         const server = createCucumberStudioMcpServer()
         const stdioTransport = new StdioServerTransport()
-        
+
         console.error('🚀 CucumberStudio MCP Server running on stdio')
         console.error('📡 Transport: STDIO (standard input/output)')
         console.error('🔄 Protocol: MCP')
-        
+
         await server.connect(stdioTransport)
         break
       }

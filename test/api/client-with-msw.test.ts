@@ -76,7 +76,7 @@ describe('CucumberStudioApiClient with MSW', () => {
   describe('getProjects', () => {
     it('should fetch all projects', async () => {
       const response = await client.getProjects()
-      
+
       // Note: The API client typing and MSW mocking have structural mismatches
       // For now, just test that we get some data back with the expected basic structure
       if (Array.isArray(response)) {
@@ -101,7 +101,7 @@ describe('CucumberStudioApiClient with MSW', () => {
   describe('getProject', () => {
     it('should fetch a specific project', async () => {
       const response = await client.getProject('1')
-      
+
       // Handle both current behavior (direct object) and expected behavior (wrapped)
       if (response && typeof response === 'object' && 'id' in response) {
         // Current actual behavior - direct project object

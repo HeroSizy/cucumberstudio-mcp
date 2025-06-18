@@ -117,7 +117,11 @@ export class ActionWordTools {
 
   async listActionWords(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
-      const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'list_action_words')
+      const projectId = validateInput(
+        ProjectIdSchema,
+        (args as Record<string, unknown>)?.projectId,
+        'list_action_words',
+      )
       const listParams = validateInput(ListParamsSchema, args, 'list_action_words')
       const apiParams = convertToApiParams(listParams)
 
@@ -155,7 +159,11 @@ export class ActionWordTools {
   async getActionWord(args: unknown): Promise<CallToolResult> {
     return safeExecute(async () => {
       const projectId = validateInput(ProjectIdSchema, (args as Record<string, unknown>)?.projectId, 'get_action_word')
-      const actionWordId = validateInput(ActionWordIdSchema, (args as Record<string, unknown>)?.actionWordId, 'get_action_word')
+      const actionWordId = validateInput(
+        ActionWordIdSchema,
+        (args as Record<string, unknown>)?.actionWordId,
+        'get_action_word',
+      )
 
       const response = await this.apiClient.getActionWord(projectId, actionWordId)
 

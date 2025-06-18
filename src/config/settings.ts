@@ -1,23 +1,32 @@
 import { config as loadDotenv } from 'dotenv'
 import { z } from 'zod'
 
+import {
+  SERVER_NAME,
+  SERVER_VERSION,
+  DEFAULT_API_BASE_URL,
+  DEFAULT_PORT,
+  DEFAULT_HOST,
+  DEFAULT_LOG_LEVEL,
+} from '../constants.js'
+
 // Configuration schema for type safety and validation
 const ConfigSchema = z.object({
   cucumberStudio: z.object({
-    baseUrl: z.string().url().default('https://studio.cucumberstudio.com/api'),
+    baseUrl: z.string().url().default(DEFAULT_API_BASE_URL),
     accessToken: z.string().min(1),
     clientId: z.string().min(1),
     uid: z.string().min(1),
   }),
   server: z.object({
-    name: z.string().default('cucumberstudio-mcp'),
-    version: z.string().default('1.0.0'),
+    name: z.string().default(SERVER_NAME),
+    version: z.string().default(SERVER_VERSION),
     transport: z.enum(['stdio', 'http', 'streamable-http']).default('stdio'),
-    port: z.number().int().min(1).max(65535).default(3000),
-    host: z.string().default('0.0.0.0'),
+    port: z.number().int().min(1).max(65535).default(DEFAULT_PORT),
+    host: z.string().default(DEFAULT_HOST),
   }),
   logging: z.object({
-    level: z.enum(['error', 'warn', 'info', 'debug', 'trace']).default('info'),
+    level: z.enum(['error', 'warn', 'info', 'debug', 'trace']).default(DEFAULT_LOG_LEVEL as 'info'),
     logApiResponses: z.boolean().default(false),
     logRequestBodies: z.boolean().default(false),
     logResponseBodies: z.boolean().default(false),

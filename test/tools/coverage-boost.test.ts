@@ -11,7 +11,7 @@ vi.mock('@/api/client.js')
 
 describe('Tools Coverage Boost', () => {
   let mockApiClient: any
-  
+
   beforeEach(() => {
     mockApiClient = {
       getScenarios: vi.fn().mockResolvedValue({ data: [] }),

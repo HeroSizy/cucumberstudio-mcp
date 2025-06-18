@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 import { ConfigManager, configManager } from '../../src/config/settings.js'
+import { SERVER_VERSION } from '../../src/constants.js'
 
 // Mock dotenv to prevent loading actual .env file
 vi.mock('dotenv', () => ({
@@ -13,7 +14,7 @@ describe('ConfigManager', () => {
   beforeEach(() => {
     originalEnv = { ...process.env }
     // Clear ALL cucumber studio and MCP environment variables
-    Object.keys(process.env).forEach(key => {
+    Object.keys(process.env).forEach((key) => {
       if (key.startsWith('CUCUMBERSTUDIO_') || key.startsWith('MCP_') || key.startsWith('LOG_')) {
         delete process.env[key]
       }
@@ -32,7 +33,7 @@ describe('ConfigManager', () => {
 
       const manager = new ConfigManager()
       const config = manager.loadFromEnvironment()
-      
+
       expect(config).toEqual({
         cucumberStudio: {
           baseUrl: 'https://studio.cucumberstudio.com/api',
@@ -42,7 +43,7 @@ describe('ConfigManager', () => {
         },
         server: {
           name: 'cucumberstudio-mcp',
-          version: '1.0.0',
+          version: SERVER_VERSION,
           transport: 'stdio', // Default value
           port: 3000,
           host: '0.0.0.0',

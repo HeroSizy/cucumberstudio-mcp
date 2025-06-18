@@ -1,3 +1,7 @@
+import { DEFAULT_LOG_LEVEL } from '../constants.js'
+
+import { LOG_COLORS as ANSI_COLORS } from './logger-constants.js'
+
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace'
 
 export interface Logger {
@@ -24,14 +28,14 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 }
 
 const LOG_COLORS: Record<LogLevel, string> = {
-  error: '\x1b[31m', // Red
-  warn: '\x1b[33m',  // Yellow
-  info: '\x1b[36m',  // Cyan
-  debug: '\x1b[90m', // Gray
-  trace: '\x1b[35m', // Magenta
+  error: ANSI_COLORS.ERROR,
+  warn: ANSI_COLORS.WARN,
+  info: ANSI_COLORS.INFO,
+  debug: ANSI_COLORS.DEBUG,
+  trace: ANSI_COLORS.DEBUG, // Using same as debug
 }
 
-const RESET_COLOR = '\x1b[0m'
+const RESET_COLOR = ANSI_COLORS.RESET
 
 /**
  * No-operation logger for testing - discards all log messages
@@ -101,7 +105,7 @@ export class StderrLogger implements Logger {
 
   private writeLog(level: LogLevel, message: string, meta?: Record<string, unknown>): void {
     if (!this.shouldLog(level)) return
-    
+
     const formatted = this.formatMessage(level, message, meta)
     console.error(formatted)
   }
@@ -142,5 +146,5 @@ export class NoopLogger implements Logger {
  * Helper to get log level from environment
  */
 export function getLogLevel(): LogLevel {
-  return (process.env.LOG_LEVEL as LogLevel) || 'info'
+  return (process.env.LOG_LEVEL as LogLevel) || (DEFAULT_LOG_LEVEL as LogLevel)
 }

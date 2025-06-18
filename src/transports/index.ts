@@ -6,7 +6,7 @@ export type { HttpTransportOptions } from './http.js'
 export enum TransportType {
   STDIO = 'stdio',
   HTTP = 'http',
-  STREAMABLE_HTTP = 'streamable-http'
+  STREAMABLE_HTTP = 'streamable-http',
 }
 
 // Legacy type alias for backwards compatibility
