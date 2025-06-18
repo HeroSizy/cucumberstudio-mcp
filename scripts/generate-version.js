@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -20,8 +20,12 @@ export const PACKAGE_VERSION = '${packageJson.version}'
 export const PACKAGE_NAME = '${packageJson.name}'
 `
 
+// Ensure the generated directory exists
+const generatedDir = join(__dirname, '..', 'src', 'generated')
+mkdirSync(generatedDir, { recursive: true })
+
 // Write to src/generated/version.ts
-const outputPath = join(__dirname, '..', 'src', 'generated', 'version.ts')
+const outputPath = join(generatedDir, 'version.ts')
 writeFileSync(outputPath, versionContent)
 
 console.log(`✅ Generated version constants: ${packageJson.name}@${packageJson.version}`)
