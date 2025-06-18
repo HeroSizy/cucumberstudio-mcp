@@ -8,6 +8,9 @@ yarn-error.log*
 build/
 dist/
 
+# Generated files
+src/generated/
+
 # Environment variables
 .env
 .env.local
