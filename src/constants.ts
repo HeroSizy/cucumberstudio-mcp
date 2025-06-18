@@ -1,5 +1,5 @@
 // Import version from package.json at build time
-import { version } from '../package.json'
+import { version } from '../package.json' with { type: 'json' }
 
 // Server Configuration
 export const SERVER_NAME = 'cucumberstudio-mcp'
