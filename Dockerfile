@@ -29,18 +29,8 @@ RUN addgroup -g 1001 -S nodejs && \
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
-# Install only production dependencies
-RUN npm ci --only=production && \
-    npm cache clean --force
-
 # Copy built application from builder stage
 COPY --from=builder --chown=mcpserver:nodejs /app/build ./build
-
-# Copy any other necessary files
-COPY --chown=mcpserver:nodejs README.md LICENSE ./
 
 # Switch to non-root user
 USER mcpserver

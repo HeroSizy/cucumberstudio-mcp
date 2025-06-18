@@ -1,9 +1,27 @@
-// Import version from package.json at build time
-import { version } from '../package.json' with { type: 'json' }
+import { readFileSync } from 'fs'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+// Get version from package.json at runtime
+function getPackageVersion(): string {
+  try {
+    // For ES modules, get current directory
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = dirname(__filename)
+    
+    // Read package.json from project root
+    const packagePath = join(__dirname, '..', 'package.json')
+    const packageJson = JSON.parse(readFileSync(packagePath, 'utf-8'))
+    return packageJson.version
+  } catch {
+    // Fallback version if package.json not found (e.g., in Docker)
+    return '1.0.3'
+  }
+}
 
 // Server Configuration
 export const SERVER_NAME = 'cucumberstudio-mcp'
-export const SERVER_VERSION = version // Single source of truth from package.json
+export const SERVER_VERSION = getPackageVersion() // Single source of truth from package.json
 export const PROTOCOL_VERSION = '2025-03-26' // MCP protocol version
 
 // API Configuration
