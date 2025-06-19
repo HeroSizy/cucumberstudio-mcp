@@ -62,6 +62,8 @@ async function initializeServerTools(server: McpServer): Promise<void> {
     // If environment validation fails, register placeholder tools that return helpful error messages
     console.error('⚠️  Environment validation failed, registering placeholder tools')
     registerPlaceholderTools(server)
+    // Suppress the unused variable warning - error is caught but not used
+    void error
   }
 }
 
