@@ -89,6 +89,17 @@ export function validateEnvironment(): void {
   const missing = required.filter((envVar) => !process.env[envVar])
 
   if (missing.length > 0) {
+    console.error('❌ Missing required environment variables:')
+    missing.forEach(envVar => {
+      console.error(`   - ${envVar}`)
+    })
+    console.error('\n📝 Please set these environment variables either:')
+    console.error('   1. In a .env file in your project directory')
+    console.error('   2. As environment variables in your shell')
+    console.error('\nExample .env file:')
+    console.error('   CUCUMBERSTUDIO_ACCESS_TOKEN=your_token_here')
+    console.error('   CUCUMBERSTUDIO_CLIENT_ID=your_client_id_here')
+    console.error('   CUCUMBERSTUDIO_UID=your_uid_here\n')
     throw new McpError(ErrorCode.InvalidRequest, `Missing required environment variables: ${missing.join(', ')}`)
   }
 }
