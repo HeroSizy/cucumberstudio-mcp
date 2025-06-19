@@ -9,6 +9,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/github/license/HeroSizy/cucumberstudio-mcp)](https://github.com/HeroSizy/cucumberstudio-mcp/blob/master/LICENSE)
 
+> *Vibe Coded with Claude Code and Pu-Er 🍵*
+
 A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studio's testing platform. This server enables AI assistants to retrieve test scenarios, action words, test runs, and project information from Cucumber Studio.
 
 ## Features
