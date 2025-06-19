@@ -1,16 +1,24 @@
 {
   "name": "cucumberstudio-mcp",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "MCP server for Cucumber Studio API integration",
   "main": "build/index.js",
   "type": "module",
   "bin": {
     "cucumberstudio-mcp": "./build/index.js"
   },
+  "files": [
+    "build/**/*",
+    "scripts/**/*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
-    "prepare": "node scripts/generate-version.js",
+    "prepare": "npm run build",
+    "prepublishOnly": "node scripts/prepublish.js",
     "prebuild": "node scripts/generate-version.js",
-    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && node scripts/prepare-package.js",
     "start": "node build/index.js",
     "start:http": "MCP_TRANSPORT=http node build/index.js",
     "dev": "tsx --watch -r tsconfig-paths/register src/index.ts",

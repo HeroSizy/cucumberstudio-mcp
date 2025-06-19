@@ -12,8 +12,8 @@ import { StderrLogger, getLogLevel } from './utils/logger.js'
  * Supports both STDIO and HTTP transports based on environment variables
  */
 async function main(): Promise<void> {
-  // Load .env file first to ensure environment variables are available
-  loadDotenv({ path: '.env' })
+  // Load .env file if it exists (for local development)
+  loadDotenv()
 
   // Determine transport based on environment variable
   const transportString = process.env.MCP_TRANSPORT?.toLowerCase() || 'stdio'
@@ -91,9 +91,8 @@ process.on('SIGTERM', () => {
 })
 
 // Run if this file is executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
-    console.error('❌ Unhandled error:', error)
-    process.exit(1)
-  })
-}
+// Note: Always run main() since this is the entry point for the MCP server
+main().catch((error) => {
+  console.error('❌ Unhandled error:', error)
+  process.exit(1)
+})

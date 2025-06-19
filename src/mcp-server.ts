@@ -21,8 +21,10 @@ export function createCucumberStudioMcpServer(): McpServer {
   })
 
   // Initialize server tools asynchronously
+  // Don't let initialization failures crash the server
   initializeServerTools(server).catch((error) => {
-    console.error('❌ Failed to initialize server tools:', error)
+    console.error('⚠️  Warning: Server tools initialization incomplete:', error.message)
+    console.error('📝 Tools will not be available until environment is properly configured.')
   })
 
   return server
@@ -32,29 +34,71 @@ export function createCucumberStudioMcpServer(): McpServer {
  * Initialize all tools and register them with the server
  */
 async function initializeServerTools(server: McpServer): Promise<void> {
-  // Validate environment variables
-  validateEnvironment()
+  try {
+    // Validate environment variables
+    validateEnvironment()
 
-  // Load configuration
-  const config = configManager.loadFromEnvironment()
+    // Load configuration
+    const config = configManager.loadFromEnvironment()
 
-  // Initialize API client
-  const apiLogger = new StderrLogger({ level: getLogLevel(), prefix: LOG_PREFIX })
-  const apiClient = new CucumberStudioApiClient(config, apiLogger)
+    // Initialize API client
+    const apiLogger = new StderrLogger({ level: getLogLevel(), prefix: LOG_PREFIX })
+    const apiClient = new CucumberStudioApiClient(config, apiLogger)
 
-  // Initialize tool classes
-  const projectTools = new ProjectTools(apiClient)
-  const scenarioTools = new ScenarioTools(apiClient)
-  const actionWordTools = new ActionWordTools(apiClient)
-  const testRunTools = new TestRunTools(apiClient)
+    // Initialize tool classes
+    const projectTools = new ProjectTools(apiClient)
+    const scenarioTools = new ScenarioTools(apiClient)
+    const actionWordTools = new ActionWordTools(apiClient)
+    const testRunTools = new TestRunTools(apiClient)
 
-  // Register all tools
-  registerProjectTools(server, projectTools)
-  registerScenarioTools(server, scenarioTools)
-  registerActionWordTools(server, actionWordTools)
-  registerTestRunTools(server, testRunTools)
+    // Register all tools
+    registerProjectTools(server, projectTools)
+    registerScenarioTools(server, scenarioTools)
+    registerActionWordTools(server, actionWordTools)
+    registerTestRunTools(server, testRunTools)
 
-  console.error('✅ CucumberStudio MCP Server tools initialized')
+    console.error('✅ CucumberStudio MCP Server tools initialized')
+  } catch (error) {
+    // If environment validation fails, register placeholder tools that return helpful error messages
+    console.error('⚠️  Environment validation failed, registering placeholder tools')
+    registerPlaceholderTools(server)
+  }
+}
+
+/**
+ * Register placeholder tools that inform about missing configuration
+ */
+function registerPlaceholderTools(server: McpServer): void {
+  // Register a single informational tool
+  server.registerTool(
+    'cucumberstudio_configure',
+    {
+      description: 'Information about configuring CucumberStudio MCP Server',
+      inputSchema: {} // Empty object for no parameters
+    },
+    async () => {
+      return {
+        content: [{
+          type: 'text',
+          text: `Missing required environment variables!
+
+Please configure the following environment variables:
+- CUCUMBERSTUDIO_ACCESS_TOKEN
+- CUCUMBERSTUDIO_CLIENT_ID
+- CUCUMBERSTUDIO_UID
+
+You can set these either:
+1. In a .env file in your project directory
+2. As environment variables in your shell
+
+Example .env file:
+CUCUMBERSTUDIO_ACCESS_TOKEN=your_token_here
+CUCUMBERSTUDIO_CLIENT_ID=your_client_id_here
+CUCUMBERSTUDIO_UID=your_uid_here`
+        }]
+      }
+    }
+  )
 }
 
 /**
