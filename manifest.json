@@ -28,6 +28,7 @@
     "scenarios",
     "action-words"
   ],
+  "icon": "assets/icon.png",
   "server": {
     "type": "node",
     "entry_point": "bundle.js",
