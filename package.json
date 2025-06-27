@@ -10,6 +10,7 @@
   "files": [
     "build/**/*",
     "scripts/**/*",
+    "manifest.json",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"

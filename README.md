@@ -28,7 +28,20 @@ A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studi
 
 ## Installation
 
-### Quick Start (Recommended)
+### Desktop Extension (DXT) Installation
+
+The easiest way to use this MCP server is as a Desktop Extension:
+
+1. **Download Extension**: Get the latest `.dxt` file from the [releases page](https://github.com/HeroSizy/cucumberstudio-mcp/releases)
+2. **Install Extension**: Import the extension in your compatible AI desktop application
+3. **Configure Credentials**: Set up your Cucumber Studio API credentials through the extension settings:
+   - **Access Token**: Your Cucumber Studio API access token
+   - **Client ID**: Your Cucumber Studio client ID
+   - **User ID**: Your Cucumber Studio user ID
+
+The extension will automatically handle the MCP server setup and communication.
+
+### Quick Start (Command Line)
 
 Run directly with npx (no installation required):
 ```bash
@@ -171,9 +184,16 @@ npm run start:http
 ```
 
 
-### Using with Claude Desktop
+### Using with MCP Clients
 
-#### Option 1: NPX (Recommended)
+#### Desktop Extension (Recommended)
+Import the `.dxt` extension file directly into your compatible AI desktop application. The extension handles all configuration through its settings interface.
+
+#### Manual MCP Configuration
+
+For manual MCP client configuration:
+
+##### Option 1: NPX (Recommended)
 ```json
 {
   "mcpServers": {
@@ -190,7 +210,7 @@ npm run start:http
 }
 ```
 
-#### Option 2: Local Installation
+##### Option 2: Local Installation
 ```json
 {
   "mcpServers": {
@@ -207,7 +227,7 @@ npm run start:http
 }
 ```
 
-#### Option 3: Docker Hub Image
+##### Option 3: Docker Hub Image
 ```json
 {
   "mcpServers": {
@@ -219,7 +239,7 @@ npm run start:http
 }
 ```
 
-#### Option 4: Local Docker Build
+##### Option 4: Local Docker Build
 ```json
 {
   "mcpServers": {
