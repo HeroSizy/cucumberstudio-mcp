@@ -186,6 +186,10 @@ jobs:
       - name: Validate manifest
         run: dxt validate manifest.json
 
+      - name: Update GitHub Actions manifest path  
+        run: |
+          sed -i 's|"args": \["build/index.js"\]|"args": ["${__dirname}/build/index.js"]|' manifest.json
+
       - name: Package DXT extension
         run: dxt pack . cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
 

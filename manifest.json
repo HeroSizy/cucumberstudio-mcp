@@ -33,7 +33,7 @@
     "entry_point": "build/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["build/index.js"],
+      "args": ["${__dirname}/build/index.js"],
       "env": {
         "CUCUMBERSTUDIO_ACCESS_TOKEN": "${user_config.access_token}",
         "CUCUMBERSTUDIO_CLIENT_ID": "${user_config.client_id}",
