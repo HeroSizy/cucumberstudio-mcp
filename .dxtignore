@@ -1,0 +1,48 @@
+# Source files (we use the compiled build/ directory)
+src/
+
+# Test files and coverage
+test/
+coverage/
+temp-test/
+
+# Development configuration
+tsconfig.json
+tsconfig.build.json
+vitest.config.ts
+eslint.config.js
+
+# Development dependencies and cache
+node_modules/.cache/
+node_modules/.bin/
+
+# Git and development files
+.git/
+.gitignore
+.github/
+
+# Docker files
+Dockerfile*
+docker-compose.yml
+
+# Development logs and temporary files
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env*
+
+# Lock files (package.json is included)
+package-lock.json
+yarn.lock
+
+# Build artifacts that aren't needed
+dxt-build/
+*.dxt

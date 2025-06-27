@@ -166,19 +166,8 @@ jobs:
           name: build-artifacts
           path: build/
 
-      - name: Prepare DXT build directory
-        run: |
-          mkdir -p dxt-build
-          cp -r build/ dxt-build/
-          cp manifest.json dxt-build/
-          cp package.json dxt-build/
-          cp README.md dxt-build/
-          cp LICENSE dxt-build/
-
       - name: Install production dependencies
-        run: |
-          cd dxt-build
-          npm install --production --no-package-lock
+        run: npm ci --production
 
       - name: Extract version from tag
         id: get_version
@@ -186,7 +175,6 @@ jobs:
 
       - name: Update manifest version
         run: |
-          cd dxt-build
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           TARGET_VERSION=${{ steps.get_version.outputs.VERSION }}
           if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
@@ -196,13 +184,10 @@ jobs:
           fi
 
       - name: Validate manifest
-        run: |
-          cd dxt-build
-          dxt validate manifest.json
+        run: dxt validate manifest.json
 
       - name: Package DXT extension
-        run: |
-          dxt pack dxt-build cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
+        run: dxt pack . cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
 
       - name: Verify DXT package
         run: |

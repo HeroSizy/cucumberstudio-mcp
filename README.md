@@ -317,6 +317,21 @@ npm run test:coverage
 npm run test:ui
 ```
 
+### DXT Extension Development
+```bash
+# Validate manifest.json
+npm run dxt:validate
+
+# Build complete DXT extension for local testing (simplified)
+npm run dxt:build
+
+# Check info about built extension
+npm run dxt:info
+
+# Clean up build artifacts
+npm run dxt:clean
+```
+
 ## Architecture
 
 The server is built with a modular, production-ready architecture:

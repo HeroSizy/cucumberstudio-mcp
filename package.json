@@ -41,7 +41,11 @@
     "docker:compose:up": "docker-compose up",
     "docker:compose:up:dev": "docker-compose --profile dev up cucumberstudio-mcp-dev",
     "docker:compose:down": "docker-compose down",
-    "docker:compose:build": "docker-compose build"
+    "docker:compose:build": "docker-compose build",
+    "dxt:validate": "dxt validate manifest.json",
+    "dxt:build": "npm run build && dxt pack . cucumberstudio-mcp-local.dxt",
+    "dxt:info": "dxt info cucumberstudio-mcp-local.dxt",
+    "dxt:clean": "rm -f cucumberstudio-mcp-local.dxt"
   },
   "keywords": [
     "mcp",
