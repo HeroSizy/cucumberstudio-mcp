@@ -1,0 +1,60 @@
+# Source files (we use the compiled bundle.js)
+src/
+build/
+scripts/
+
+# Test files and coverage
+test/
+coverage/
+temp-test/
+
+# Development configuration
+tsconfig.json
+tsconfig.build.json
+vitest.config.ts
+eslint.config.js
+tsconfig.prod.json
+package.json
+esbuild.config.js
+
+# All node_modules (using bundle.js instead)
+node_modules/
+
+# Git and development files
+.git/
+.gitignore
+.github/
+
+# Docker files
+Dockerfile*
+docker-compose.yml
+
+# Development logs and temporary files
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env*
+
+# Lock files (package.json is included)
+package-lock.json
+yarn.lock
+
+# Build artifacts that aren't needed for runtime
+dxt-build/
+*.dxt
+build/**/*.d.ts
+build/**/*.d.ts.map
+build/**/*.js.map
+
+# Claude related
+.claude/
+CLAUDE.md
+README.md

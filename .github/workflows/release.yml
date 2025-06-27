@@ -143,10 +143,68 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  build-dxt-extension:
+    name: Build DXT Extension
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install DXT CLI
+        run: npm install -g @anthropic-ai/dxt
+
+      - name: Build ESBuild bundle
+        run: npm run bundle
+
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Update manifest version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          TARGET_VERSION=${{ steps.get_version.outputs.VERSION }}
+          if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
+            echo "Updating manifest version from $CURRENT_VERSION to $TARGET_VERSION"
+            sed -i "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$TARGET_VERSION\"/" manifest.json
+            sed -i "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$TARGET_VERSION\"/" package.json
+          fi
+
+      - name: Validate manifest
+        run: dxt validate manifest.json
+
+      - name: Update GitHub Actions manifest path  
+        run: |
+          sed -i 's|"args": \["bundle.js"\]|"args": ["${__dirname}/bundle.js"]|' manifest.json
+
+      - name: Package DXT extension
+        run: dxt pack . cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
+
+      - name: Verify DXT package
+        run: |
+          dxt info cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
+
+      - name: Upload DXT artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dxt-extension
+          path: cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
+          retention-days: 1
+
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [publish-npm, publish-docker]
+    needs: [publish-npm, publish-docker, build-dxt-extension]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -154,6 +212,12 @@ jobs:
       - name: Extract version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Download DXT extension artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dxt-extension
+          path: ./
 
       - name: Generate changelog
         id: changelog
@@ -177,6 +241,9 @@ jobs:
             
             ## Installation
             
+            ### Desktop Extension (Recommended)
+            Download the `.dxt` file below and import it into your AI desktop application.
+            
             ### NPM
             ```bash
             npx cucumberstudio-mcp
@@ -190,5 +257,7 @@ jobs:
             ## Links
             - [NPM Package](https://www.npmjs.com/package/cucumberstudio-mcp)
             - [Docker Image](https://hub.docker.com/r/${{ env.IMAGE_NAME }})
+          files: |
+            cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
           draft: false
           prerelease: false

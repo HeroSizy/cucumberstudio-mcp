@@ -1,4 +1,3 @@
-import { config as loadDotenv } from 'dotenv'
 import { z } from 'zod'
 
 import {
@@ -42,10 +41,13 @@ export class ConfigManager {
 
   /**
    * Load configuration from environment variables
+   * Supports both traditional environment variables and DXT user configuration
+   * Note: .env file loading is handled by entry points (index.ts), not here
    */
   public loadFromEnvironment(): Config {
-    // Auto-load .env file if it exists
-    loadDotenv({ path: '.env' })
+    // Environment variables are read from process.env
+    // .env loading is handled at application startup in entry points
+    
     const rawConfig = {
       cucumberStudio: {
         baseUrl: process.env.CUCUMBERSTUDIO_BASE_URL,
@@ -78,8 +80,10 @@ export class ConfigManager {
         const missingFields = error.errors.map((e) => e.path.join('.')).join(', ')
         throw new Error(
           `Configuration validation failed. Missing or invalid fields: ${missingFields}. ` +
-            'Please ensure all required environment variables are set: ' +
-            'CUCUMBERSTUDIO_ACCESS_TOKEN, CUCUMBERSTUDIO_CLIENT_ID, CUCUMBERSTUDIO_UID',
+            'Please ensure all required credentials are configured: ' +
+            'Access Token, Client ID, and User ID. ' +
+            'In DXT environments, these should be configured through the extension settings. ' +
+            'For development, set environment variables: CUCUMBERSTUDIO_ACCESS_TOKEN, CUCUMBERSTUDIO_CLIENT_ID, CUCUMBERSTUDIO_UID',
         )
       }
       throw error

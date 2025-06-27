@@ -1,0 +1,127 @@
+{
+  "dxt_version": "0.1",
+  "name": "cucumberstudio-mcp",
+  "display_name": "Cucumber Studio MCP",
+  "version": "1.1.3",
+  "description": "MCP server for Cucumber Studio API integration - access test scenarios, action words, and execution data",
+  "long_description": "A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studio's testing platform. This server enables AI assistants to retrieve test scenarios, action words, test runs, and project information from Cucumber Studio. Features include project management, scenario browsing, reusable test steps access, and test execution monitoring with comprehensive error handling and type safety.",
+  "author": {
+    "name": "HeroSizy",
+    "url": "https://github.com/HeroSizy/cucumberstudio-mcp"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HeroSizy/cucumberstudio-mcp.git"
+  },
+  "homepage": "https://github.com/HeroSizy/cucumberstudio-mcp#readme",
+  "documentation": "https://github.com/HeroSizy/cucumberstudio-mcp/blob/master/README.md",
+  "support": "https://github.com/HeroSizy/cucumberstudio-mcp/issues",
+  "keywords": [
+    "cucumber",
+    "testing",
+    "api",
+    "automation",
+    "bdd",
+    "cucumber-studio",
+    "test-management",
+    "scenarios",
+    "action-words"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "bundle.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/bundle.js"],
+      "env": {
+        "CUCUMBERSTUDIO_ACCESS_TOKEN": "${user_config.access_token}",
+        "CUCUMBERSTUDIO_CLIENT_ID": "${user_config.client_id}",
+        "CUCUMBERSTUDIO_UID": "${user_config.uid}",
+        "MCP_TRANSPORT": "stdio"
+      }
+    }
+  },
+  "user_config": {
+    "access_token": {
+      "type": "string",
+      "title": "Access Token",
+      "description": "Your Cucumber Studio API access token. Get this from your Cucumber Studio account settings under API tokens.",
+      "required": true,
+      "sensitive": true
+    },
+    "client_id": {
+      "type": "string",
+      "title": "Client ID",
+      "description": "Your Cucumber Studio client ID. This is provided when you create an API application in Cucumber Studio.",
+      "required": true
+    },
+    "uid": {
+      "type": "string",
+      "title": "User ID",
+      "description": "Your Cucumber Studio user ID. This can be found in your account settings or profile information.",
+      "required": true
+    }
+  },
+  "tools": [
+    {
+      "name": "cucumberstudio_list_projects",
+      "description": "List all projects accessible to the authenticated user with optional pagination and filtering"
+    },
+    {
+      "name": "cucumberstudio_get_project",
+      "description": "Get detailed information about a specific project including settings and metadata"
+    },
+    {
+      "name": "cucumberstudio_list_scenarios",
+      "description": "List test scenarios in a project with support for folder filtering and pagination"
+    },
+    {
+      "name": "cucumberstudio_get_scenario",
+      "description": "Get detailed scenario information including steps, tags, and execution history"
+    },
+    {
+      "name": "cucumberstudio_find_scenarios_by_tags",
+      "description": "Search and filter scenarios by tags across projects for targeted test execution"
+    },
+    {
+      "name": "cucumberstudio_list_action_words",
+      "description": "List reusable action words (test steps) with pagination and filtering capabilities"
+    },
+    {
+      "name": "cucumberstudio_get_action_word",
+      "description": "Get detailed action word information including parameters and usage examples"
+    },
+    {
+      "name": "cucumberstudio_find_action_words_by_tags",
+      "description": "Search action words by tags to find reusable test components"
+    },
+    {
+      "name": "cucumberstudio_list_test_runs",
+      "description": "List test execution runs with filtering by status, dates, and execution environments"
+    },
+    {
+      "name": "cucumberstudio_get_test_run",
+      "description": "Get detailed test run information including execution status and results summary"
+    },
+    {
+      "name": "cucumberstudio_get_test_executions",
+      "description": "Get individual test execution results and detailed failure information"
+    },
+    {
+      "name": "cucumberstudio_list_builds",
+      "description": "List builds associated with test executions for CI/CD integration tracking"
+    },
+    {
+      "name": "cucumberstudio_get_build",
+      "description": "Get detailed build information including test results and execution metadata"
+    },
+    {
+      "name": "cucumberstudio_list_execution_environments",
+      "description": "List available execution environments for test runs and build configurations"
+    }
+  ],
+  "compatibility": {
+    "node": ">=20.0.0"
+  }
+}

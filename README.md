@@ -28,7 +28,20 @@ A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studi
 
 ## Installation
 
-### Quick Start (Recommended)
+### Desktop Extension (DXT) Installation
+
+The easiest way to use this MCP server is as a Desktop Extension:
+
+1. **Download Extension**: Get the latest `.dxt` file from the [releases page](https://github.com/HeroSizy/cucumberstudio-mcp/releases) (automatically built from each release)
+2. **Install Extension**: Import the extension in your compatible AI desktop application
+3. **Configure Credentials**: Set up your Cucumber Studio API credentials through the extension settings:
+   - **Access Token**: Your Cucumber Studio API access token
+   - **Client ID**: Your Cucumber Studio client ID
+   - **User ID**: Your Cucumber Studio user ID
+
+The extension will automatically handle the MCP server setup and communication.
+
+### Quick Start (Command Line)
 
 Run directly with npx (no installation required):
 ```bash
@@ -120,7 +133,7 @@ npm run docker:build
 npm run docker:run
 ```
 
-The Docker setup includes health checks and automatic restarts for production use.
+The Docker setup includes health checks and automatic restarts for production use. The multi-stage build process creates optimized production images with only runtime dependencies (~150MB).
 
 ## Configuration
 
@@ -171,9 +184,16 @@ npm run start:http
 ```
 
 
-### Using with Claude Desktop
+### Using with MCP Clients
 
-#### Option 1: NPX (Recommended)
+#### Desktop Extension (Recommended)
+Import the `.dxt` extension file directly into your compatible AI desktop application. The extension handles all configuration through its settings interface.
+
+#### Manual MCP Configuration
+
+For manual MCP client configuration:
+
+##### Option 1: NPX (Recommended)
 ```json
 {
   "mcpServers": {
@@ -190,7 +210,7 @@ npm run start:http
 }
 ```
 
-#### Option 2: Local Installation
+##### Option 2: Local Installation
 ```json
 {
   "mcpServers": {
@@ -207,7 +227,7 @@ npm run start:http
 }
 ```
 
-#### Option 3: Docker Hub Image
+##### Option 3: Docker Hub Image
 ```json
 {
   "mcpServers": {
@@ -219,7 +239,7 @@ npm run start:http
 }
 ```
 
-#### Option 4: Local Docker Build
+##### Option 4: Local Docker Build
 ```json
 {
   "mcpServers": {
@@ -295,6 +315,30 @@ npm run test:coverage
 
 # Run tests with UI
 npm run test:ui
+```
+
+### Build Options
+```bash
+# Production build (default) - optimized for size, no .d.ts/.js.map files
+npm run build
+
+# Development build - includes source maps and type declarations for debugging
+npm run build:dev
+```
+
+### DXT Extension Development
+```bash
+# Validate manifest.json
+npm run dxt:validate
+
+# Build complete DXT extension for local testing (optimized production build)
+npm run dxt:build
+
+# Check info about built extension
+npm run dxt:info
+
+# Clean up build artifacts
+npm run dxt:clean
 ```
 
 ## Architecture

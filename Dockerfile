@@ -31,6 +31,13 @@ RUN addgroup -g 1001 -S nodejs && \
 # Set working directory
 WORKDIR /app
 
+# Copy package files for dependency installation
+COPY --chown=mcpserver:nodejs package*.json ./
+
+# Install only production dependencies
+RUN npm ci --production --ignore-scripts && \
+    npm cache clean --force
+
 # Copy built application from builder stage
 COPY --from=builder --chown=mcpserver:nodejs /app/build ./build
 
