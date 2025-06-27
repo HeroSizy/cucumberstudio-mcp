@@ -32,7 +32,7 @@ A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studi
 
 The easiest way to use this MCP server is as a Desktop Extension:
 
-1. **Download Extension**: Get the latest `.dxt` file from the [releases page](https://github.com/HeroSizy/cucumberstudio-mcp/releases)
+1. **Download Extension**: Get the latest `.dxt` file from the [releases page](https://github.com/HeroSizy/cucumberstudio-mcp/releases) (automatically built from each release)
 2. **Install Extension**: Import the extension in your compatible AI desktop application
 3. **Configure Credentials**: Set up your Cucumber Studio API credentials through the extension settings:
    - **Access Token**: Your Cucumber Studio API access token

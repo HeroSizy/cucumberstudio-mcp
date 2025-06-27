@@ -42,30 +42,27 @@
       }
     }
   },
-  "user_config": [
-    {
-      "name": "access_token",
+  "user_config": {
+    "access_token": {
+      "type": "string",
       "title": "Access Token",
       "description": "Your Cucumber Studio API access token. Get this from your Cucumber Studio account settings under API tokens.",
-      "type": "string",
       "required": true,
       "sensitive": true
     },
-    {
-      "name": "client_id",
+    "client_id": {
+      "type": "string",
       "title": "Client ID",
       "description": "Your Cucumber Studio client ID. This is provided when you create an API application in Cucumber Studio.",
-      "type": "string",
       "required": true
     },
-    {
-      "name": "uid",
+    "uid": {
+      "type": "string",
       "title": "User ID",
       "description": "Your Cucumber Studio user ID. This can be found in your account settings or profile information.",
-      "type": "string",
       "required": true
     }
-  ],
+  },
   "tools": [
     {
       "name": "cucumberstudio_list_projects",
