@@ -9,7 +9,7 @@ const config = {
   target: 'node20',
   format: 'cjs',
   outfile: 'bundle.js',
-  minify: false,  // Disable minify to debug issues
+  minify: true,  // Enable minify for smaller bundle size
   sourcemap: false,
   treeShaking: true,
   

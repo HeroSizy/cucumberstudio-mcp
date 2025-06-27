@@ -46,7 +46,6 @@
     "bundle": "node esbuild.config.js",
     "dxt:validate": "dxt validate manifest.json",
     "dxt:build": "npm run bundle && dxt pack . cucumberstudio-mcp-local.dxt",
-    "dxt:build:old": "npm run build && dxt pack . cucumberstudio-mcp-local.dxt",
     "dxt:info": "dxt info cucumberstudio-mcp-local.dxt",
     "dxt:clean": "rm -f cucumberstudio-mcp-local.dxt bundle.js"
   },
