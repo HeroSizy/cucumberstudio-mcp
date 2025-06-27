@@ -30,10 +30,10 @@
   ],
   "server": {
     "type": "node",
-    "entry_point": "build/index.js",
+    "entry_point": "bundle.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/build/index.js"],
+      "args": ["${__dirname}/bundle.js"],
       "env": {
         "CUCUMBERSTUDIO_ACCESS_TOKEN": "${user_config.access_token}",
         "CUCUMBERSTUDIO_CLIENT_ID": "${user_config.client_id}",

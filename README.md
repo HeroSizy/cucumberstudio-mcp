@@ -133,7 +133,7 @@ npm run docker:build
 npm run docker:run
 ```
 
-The Docker setup includes health checks and automatic restarts for production use.
+The Docker setup includes health checks and automatic restarts for production use. The multi-stage build process creates optimized production images with only runtime dependencies (~150MB).
 
 ## Configuration
 
@@ -317,12 +317,21 @@ npm run test:coverage
 npm run test:ui
 ```
 
+### Build Options
+```bash
+# Production build (default) - optimized for size, no .d.ts/.js.map files
+npm run build
+
+# Development build - includes source maps and type declarations for debugging
+npm run build:dev
+```
+
 ### DXT Extension Development
 ```bash
 # Validate manifest.json
 npm run dxt:validate
 
-# Build complete DXT extension for local testing (simplified)
+# Build complete DXT extension for local testing (optimized production build)
 npm run dxt:build
 
 # Check info about built extension

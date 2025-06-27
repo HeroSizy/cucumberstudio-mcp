@@ -157,17 +157,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Install DXT CLI
         run: npm install -g @anthropic-ai/dxt
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-          path: build/
-
-      - name: Install production dependencies
-        run: npm ci --production
+      - name: Build ESBuild bundle
+        run: npm run bundle
 
       - name: Extract version from tag
         id: get_version
@@ -188,7 +185,7 @@ jobs:
 
       - name: Update GitHub Actions manifest path  
         run: |
-          sed -i 's|"args": \["build/index.js"\]|"args": ["${__dirname}/build/index.js"]|' manifest.json
+          sed -i 's|"args": \["bundle.js"\]|"args": ["${__dirname}/bundle.js"]|' manifest.json
 
       - name: Package DXT extension
         run: dxt pack . cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt

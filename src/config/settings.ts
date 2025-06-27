@@ -1,4 +1,3 @@
-import { config as loadDotenv } from 'dotenv'
 import { z } from 'zod'
 
 import {
@@ -43,10 +42,11 @@ export class ConfigManager {
   /**
    * Load configuration from environment variables
    * Supports both traditional environment variables and DXT user configuration
+   * Note: .env file loading is handled by entry points (index.ts), not here
    */
   public loadFromEnvironment(): Config {
-    // Auto-load .env file if it exists (for development)
-    loadDotenv({ path: '.env' })
+    // Environment variables are read from process.env
+    // .env loading is handled at application startup in entry points
     
     const rawConfig = {
       cucumberStudio: {
