@@ -183,7 +183,7 @@ jobs:
       - name: Validate manifest
         run: dxt validate manifest.json
 
-      - name: Update GitHub Actions manifest path  
+      - name: Update GitHub Actions manifest path
         run: |
           sed -i 's|"args": \["bundle.js"\]|"args": ["${__dirname}/bundle.js"]|' manifest.json
 
@@ -219,41 +219,29 @@ jobs:
           name: dxt-extension
           path: ./
 
-      - name: Generate changelog
-        id: changelog
-        run: |
-          if [ -f CHANGELOG.md ]; then
-            echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
-            sed -n "/## \[${{ steps.get_version.outputs.VERSION }}\]/,/## \[/p" CHANGELOG.md | head -n -1 >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            echo "CHANGELOG=Release ${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
-          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ steps.get_version.outputs.VERSION }}
+          generate_release_notes: true
           body: |
-            ## Changes in v${{ steps.get_version.outputs.VERSION }}
-            
-            ${{ steps.changelog.outputs.CHANGELOG }}
-            
             ## Installation
-            
+
             ### Desktop Extension (Recommended)
             Download the `.dxt` file below and import it into your AI desktop application.
-            
+
             ### NPM
             ```bash
             npx cucumberstudio-mcp
             ```
-            
+
             ### Docker
             ```bash
-            docker run --env-file .env ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+            docker run --env-file .env \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
             ```
-            
+
             ## Links
             - [NPM Package](https://www.npmjs.com/package/cucumberstudio-mcp)
             - [Docker Image](https://hub.docker.com/r/${{ env.IMAGE_NAME }})
