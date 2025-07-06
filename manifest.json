@@ -7,15 +7,15 @@
   "long_description": "A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studio's testing platform. This server enables AI assistants to retrieve test scenarios, action words, test runs, and project information from Cucumber Studio. Features include project management, scenario browsing, reusable test steps access, and test execution monitoring with comprehensive error handling and type safety.",
   "author": {
     "name": "HeroSizy",
-    "url": "https://github.com/HeroSizy/cucumberstudio-mcp"
+    "url": "https://github.com/HeroSizy"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HeroSizy/cucumberstudio-mcp.git"
+    "url": "https://github.com/HeroSizy/cucumberstudio-mcp"
   },
   "homepage": "https://github.com/HeroSizy/cucumberstudio-mcp#readme",
-  "documentation": "https://github.com/HeroSizy/cucumberstudio-mcp/blob/master/README.md",
+  "documentation": "https://github.com/HeroSizy/cucumberstudio-mcp#readme",
   "support": "https://github.com/HeroSizy/cucumberstudio-mcp/issues",
   "keywords": [
     "cucumber",
@@ -120,6 +120,38 @@
     {
       "name": "cucumberstudio_list_execution_environments",
       "description": "List available execution environments for test runs and build configurations"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "analyze_scenario",
+      "description": "Analyze a Cucumber Studio scenario for BDD best practices",
+      "arguments": ["scenario_reference"],
+      "text": "Analyze the Cucumber Studio scenario at ${arguments.scenario_reference} for BDD best practices, step clarity, and overall quality. First fetch the scenario data using the appropriate MCP tools, then provide detailed feedback on improvements."
+    },
+    {
+      "name": "review_project_health",
+      "description": "Review overall project testing health and trends",
+      "arguments": ["project_reference"],
+      "text": "Review the testing health of the Cucumber Studio project ${arguments.project_reference}. Fetch project data and recent test runs, then provide a comprehensive health summary including success rates, failure patterns, and recommendations."
+    },
+    {
+      "name": "diagnose_test_failures",
+      "description": "Diagnose test execution failures and suggest fixes",
+      "arguments": ["test_run_reference"],
+      "text": "Diagnose the failures in test run ${arguments.test_run_reference}. Fetch the test execution data and analyze failure patterns, root causes, and provide actionable recommendations for fixing the issues."
+    },
+    {
+      "name": "optimize_action_word",
+      "description": "Review action word for optimization opportunities",
+      "arguments": ["action_word_reference"],
+      "text": "Review the action word ${arguments.action_word_reference} for optimization opportunities. Fetch the action word details and analyze its structure, parameters, and usage patterns to suggest improvements."
+    },
+    {
+      "name": "compare_environments",
+      "description": "Compare test performance across execution environments",
+      "arguments": ["project_reference"],
+      "text": "Compare test execution performance across different environments for project ${arguments.project_reference}. Fetch environment data and test results, then analyze performance differences and stability issues."
     }
   ],
   "compatibility": {
