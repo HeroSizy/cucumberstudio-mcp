@@ -183,9 +183,17 @@ jobs:
       - name: Validate manifest
         run: dxt validate manifest.json
 
-      - name: Update GitHub Actions manifest path
+      - name: Validate manifest args field
         run: |
-          sed -i 's|"args": \["bundle.js"\]|"args": ["${__dirname}/bundle.js"]|' manifest.json
+          EXPECTED_ARGS='["${__dirname}/bundle.js"]'
+          ACTUAL_ARGS=$(jq -r '.server.mcp_config.args | tostring' manifest.json)
+          if [ "$ACTUAL_ARGS" != "$EXPECTED_ARGS" ]; then
+            echo "ERROR: manifest.json args field is incorrect"
+            echo "Expected: $EXPECTED_ARGS"
+            echo "Actual: $ACTUAL_ARGS"
+            exit 1
+          fi
+          echo "✓ Manifest args field is correct: $ACTUAL_ARGS"
 
       - name: Package DXT extension
         run: dxt pack . cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
