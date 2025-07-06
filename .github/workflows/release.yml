@@ -185,15 +185,17 @@ jobs:
 
       - name: Validate manifest args field
         run: |
+          set -euo pipefail
           EXPECTED_ARGS='["${__dirname}/bundle.js"]'
-          ACTUAL_ARGS=$(jq -r '.server.mcp_config.args | tostring' manifest.json)
-          if [ "$ACTUAL_ARGS" != "$EXPECTED_ARGS" ]; then
+          EXPECTED_JSON=$(echo "$EXPECTED_ARGS" | jq -c '.')
+          ACTUAL_JSON=$(jq -c '.server.mcp_config.args' manifest.json)
+          if [ "$ACTUAL_JSON" != "$EXPECTED_JSON" ]; then
             echo "ERROR: manifest.json args field is incorrect"
-            echo "Expected: $EXPECTED_ARGS"
-            echo "Actual: $ACTUAL_ARGS"
+            echo "Expected: $EXPECTED_JSON"
+            echo "Actual: $ACTUAL_JSON"
             exit 1
           fi
-          echo "✓ Manifest args field is correct: $ACTUAL_ARGS"
+          echo "✓ Manifest args field is correct: $ACTUAL_JSON"
 
       - name: Package DXT extension
         run: dxt pack . cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
