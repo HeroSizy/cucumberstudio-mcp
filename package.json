@@ -44,9 +44,9 @@
     "docker:compose:down": "docker-compose down",
     "docker:compose:build": "docker-compose build",
     "bundle": "node esbuild.config.js",
-    "dxt:validate": "dxt validate manifest.json",
-    "dxt:build": "npm run bundle && dxt pack . cucumberstudio-mcp-local.dxt",
-    "dxt:info": "dxt info cucumberstudio-mcp-local.dxt",
+    "dxt:validate": "npx @anthropic-ai/dxt validate manifest.json",
+    "dxt:build": "npm run bundle && npx @anthropic-ai/dxt pack . cucumberstudio-mcp-local.dxt",
+    "dxt:info": "npx @anthropic-ai/dxt info cucumberstudio-mcp-local.dxt",
     "dxt:clean": "rm -f cucumberstudio-mcp-local.dxt bundle.js"
   },
   "keywords": [
@@ -80,6 +80,7 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
+    "@anthropic-ai/dxt": "^0.2.0",
     "@types/cors": "^2.8.0",
     "@types/express": "^4.17.0",
     "@types/node": "^22.15.30",
