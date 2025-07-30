@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/herosizy-cucumberstudio-mcp-badge.png)](https://mseep.ai/app/herosizy-cucumberstudio-mcp)
+
 # Cucumber Studio MCP Server
 
 [![NPM Version](https://img.shields.io/npm/v/cucumberstudio-mcp)](https://www.npmjs.com/package/cucumberstudio-mcp)
