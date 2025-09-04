@@ -12,7 +12,7 @@ const __dirname = dirname(__filename)
 const indexPath = join(__dirname, '..', 'build', 'index.js')
 
 try {
-  chmodSync(indexPath, '755')
+  chmodSync(indexPath, 0o755)
   console.log('✅ Made build/index.js executable')
 } catch (error) {
   console.error('⚠️  Warning: Failed to make build/index.js executable:', error.message)

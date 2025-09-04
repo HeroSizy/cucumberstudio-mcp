@@ -117,7 +117,7 @@ export class StreamableHttpTransport {
         status: 'healthy',
         timestamp: new Date().toISOString(),
         transport: 'streamable-http',
-        protocol: '2025-03-26',
+        protocol: PROTOCOL_VERSION,
         activeSessions: this.transports.size,
       })
     })
@@ -412,11 +412,16 @@ export class StreamableHttpTransport {
   }
 
   private isValidOrigin(origin: string): boolean {
-    // Implement your origin validation logic here
-    // For development, allow localhost and 127.0.0.1
-    const allowedOrigins = DEFAULT_CORS_ORIGINS
-
-    return allowedOrigins.some((allowed) => origin.includes(allowed))
+    // Only allow exact host matches from the allowed list
+    try {
+      const url = new URL(origin)
+      const host = url.hostname
+      const allowedOrigins = DEFAULT_CORS_ORIGINS
+      return allowedOrigins.includes(host)
+    } catch {
+      // If not a valid URL, reject
+      return false
+    }
   }
 
   async start(): Promise<void> {
@@ -430,7 +435,7 @@ export class StreamableHttpTransport {
               `Streamable HTTP transport listening on ${this.options.host || '127.0.0.1'}:${this.options.port}`,
             )
             this.logger.info(`MCP endpoint: http://${this.options.host || 'localhost'}:${this.options.port}/mcp`)
-            this.logger.info(`Protocol: MCP 2025-03-26 with Streamable HTTP`)
+            this.logger.info(`Protocol: MCP ${PROTOCOL_VERSION} with Streamable HTTP`)
             resolve()
           },
         )

@@ -1,5 +1,6 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { PROTOCOL_VERSION } from '../constants.js'
 
 /**
  * Creates a STDIO transport for MCP server
@@ -18,7 +19,7 @@ export class StdioTransport {
     await this.mcpServer.connect(this.transport)
     console.error('🚀 Cucumber Studio MCP Server running on stdio')
     console.error('📡 Transport: STDIO (standard input/output)')
-    console.error('🔄 Protocol: MCP 2025-03-26')
+    console.error(`🔄 Protocol: MCP ${PROTOCOL_VERSION}`)
   }
 
   async close(): Promise<void> {
