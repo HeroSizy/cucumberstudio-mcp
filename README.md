@@ -327,6 +327,7 @@ npm run build:dev
 ```
 
 ### MCPB Extension Development
+
 ```bash
 # Validate manifest.json
 npm run mcpb:validate
