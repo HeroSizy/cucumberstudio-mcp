@@ -3,18 +3,18 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { createCucumberStudioMcpServer } from './mcp-server.js'
 
 /**
- * DXT-optimized entry point for the Cucumber Studio MCP Server
+ * MCPB-optimized entry point for the Cucumber Studio MCP Server
  * STDIO transport only - HTTP transport code excluded from bundle
- * Environment variables provided by DXT runtime (no .env files needed)
+ * Environment variables provided by MCPB runtime (no .env files needed)
  */
 async function main(): Promise<void> {
-  // DXT provides environment variables through manifest configuration
-  // No need for dotenv in DXT runtime
+  // MCPB provides environment variables through manifest configuration
+  // No need for dotenv in MCPB runtime
 
   console.error(`🎯 Starting Cucumber Studio MCP Server with stdio transport...`)
 
   try {
-    // STDIO transport only (DXT optimization)
+    // STDIO transport only (MCPB optimization)
     const server = createCucumberStudioMcpServer()
     const stdioTransport = new StdioServerTransport()
 

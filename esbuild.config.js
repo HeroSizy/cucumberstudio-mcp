@@ -1,9 +1,9 @@
 import { build } from 'esbuild';
 import { readFileSync, chmodSync } from 'fs';
 
-// Simple ESBuild config for DXT bundle
+// Simple ESBuild config for MCPB bundle
 const config = {
-  entryPoints: ['src/index.dxt.ts'],
+  entryPoints: ['src/index.mcpb.ts'],
   bundle: true,
   platform: 'node',
   target: 'node20',
@@ -13,7 +13,7 @@ const config = {
   sourcemap: false,
   treeShaking: true,
   
-  // External Node.js built-ins and packages not needed in DXT
+  // External Node.js built-ins and packages not needed in MCPB
   external: ['fs', 'path', 'os', 'crypto', 'util', 'events', 'dotenv'],
   
   // Simple banner
@@ -23,13 +23,13 @@ const config = {
 };
 
 // Build function
-async function buildDXT() {
+async function buildMCPB() {
   try {
-    console.log('🚀 Building DXT bundle with ESBuild...');
-    
+    console.log('🚀 Building MCPB bundle with ESBuild...');
+
     const result = await build(config);
-    
-    console.log('✅ DXT bundle built successfully!');
+
+    console.log('✅ MCPB bundle built successfully!');
     console.log(`📦 Output: bundle.js`);
     
     // Make bundle executable
@@ -52,5 +52,5 @@ export { config };
 
 // Run if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  buildDXT();
+  buildMCPB();
 }

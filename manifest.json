@@ -1,5 +1,5 @@
 {
-  "dxt_version": "0.2.5",
+  "manifest_version": "0.3",
   "name": "cucumberstudio-mcp",
   "display_name": "Cucumber Studio MCP",
   "version": "1.1.8",
@@ -155,6 +155,8 @@
     }
   ],
   "compatibility": {
-    "node": ">=20.0.0"
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
   }
 }

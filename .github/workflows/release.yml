@@ -143,8 +143,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  build-dxt-extension:
-    name: Build DXT Extension
+  build-mcpb-extension:
+    name: Build MCPB Extension
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -160,8 +160,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install DXT CLI
-        run: npm install -g @anthropic-ai/dxt
+      - name: Install MCPB CLI
+        run: npm install -g @anthropic-ai/mcpb@2.1.2
 
       - name: Build ESBuild bundle
         run: npm run bundle
@@ -181,7 +181,7 @@ jobs:
           fi
 
       - name: Validate manifest
-        run: dxt validate manifest.json
+        run: mcpb validate manifest.json
 
       - name: Validate manifest args field
         run: |
@@ -197,24 +197,24 @@ jobs:
           fi
           echo "✓ Manifest args field is correct: $ACTUAL_JSON"
 
-      - name: Package DXT extension
-        run: dxt pack . cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
+      - name: Package MCPB extension
+        run: mcpb pack . cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.mcpb
 
-      - name: Verify DXT package
+      - name: Verify MCPB package
         run: |
-          dxt info cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
+          mcpb info cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.mcpb
 
-      - name: Upload DXT artifact
+      - name: Upload MCPB artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dxt-extension
-          path: cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
+          name: mcpb-extension
+          path: cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.mcpb
           retention-days: 1
 
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [publish-npm, publish-docker, build-dxt-extension]
+    needs: [publish-npm, publish-docker, build-mcpb-extension]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -223,10 +223,10 @@ jobs:
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Download DXT extension artifact
+      - name: Download MCPB extension artifact
         uses: actions/download-artifact@v4
         with:
-          name: dxt-extension
+          name: mcpb-extension
           path: ./
 
 
@@ -239,7 +239,7 @@ jobs:
             ## Installation
 
             ### Desktop Extension (Recommended)
-            Download the `.dxt` file below and import it into your AI desktop application.
+            Download the `.mcpb` file below and import it into your AI desktop application.
 
             ### NPM
             ```bash
@@ -256,6 +256,6 @@ jobs:
             - [NPM Package](https://www.npmjs.com/package/cucumberstudio-mcp)
             - [Docker Image](https://hub.docker.com/r/${{ env.IMAGE_NAME }})
           files: |
-            cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.dxt
+            cucumberstudio-mcp-${{ steps.get_version.outputs.VERSION }}.mcpb
           draft: false
           prerelease: false

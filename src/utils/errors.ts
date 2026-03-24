@@ -2,7 +2,7 @@ import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js'
 
 /**
  * Convert various error types into MCP-compatible errors
- * Enhanced for DXT extension compatibility with detailed error context
+ * Enhanced for MCPB extension compatibility with detailed error context
  */
 export function createMcpError(error: unknown, context?: string): McpError {
   if (error instanceof McpError) {
@@ -26,11 +26,11 @@ export function createMcpError(error: unknown, context?: string): McpError {
       )
     }
 
-    // Handle configuration errors specifically for DXT
+    // Handle configuration errors specifically for MCPB
     if (error.message.includes('Configuration validation failed')) {
       return new McpError(
         ErrorCode.InvalidRequest,
-        `Configuration error: ${error.message}. Please check your DXT extension settings.`,
+        `Configuration error: ${error.message}. Please check your MCPB extension settings.`,
       )
     }
 
