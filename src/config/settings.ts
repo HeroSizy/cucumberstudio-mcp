@@ -41,7 +41,7 @@ export class ConfigManager {
 
   /**
    * Load configuration from environment variables
-   * Supports both traditional environment variables and DXT user configuration
+   * Supports both traditional environment variables and MCPB user configuration
    * Note: .env file loading is handled by entry points (index.ts), not here
    */
   public loadFromEnvironment(): Config {
@@ -82,7 +82,7 @@ export class ConfigManager {
           `Configuration validation failed. Missing or invalid fields: ${missingFields}. ` +
             'Please ensure all required credentials are configured: ' +
             'Access Token, Client ID, and User ID. ' +
-            'In DXT environments, these should be configured through the extension settings. ' +
+            'In MCPB environments, these should be configured through the extension settings. ' +
             'For development, set environment variables: CUCUMBERSTUDIO_ACCESS_TOKEN, CUCUMBERSTUDIO_CLIENT_ID, CUCUMBERSTUDIO_UID',
         )
       }

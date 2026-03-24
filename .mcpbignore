@@ -48,8 +48,8 @@ package-lock.json
 yarn.lock
 
 # Build artifacts that aren't needed for runtime
-dxt-build/
-*.dxt
+mcpb-build/
+*.mcpb
 build/**/*.d.ts
 build/**/*.d.ts.map
 build/**/*.js.map

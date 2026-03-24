@@ -101,8 +101,8 @@ Thumbs.db
 # Docker
 .dockerignore
 
-# DXT packages
-*.dxt
+# MCPB packages
+*.mcpb
 bundle.js
 
 !CLAUDE.md

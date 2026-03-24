@@ -28,11 +28,11 @@ A Model Context Protocol (MCP) server that provides LLM access to Cucumber Studi
 
 ## Installation
 
-### Desktop Extension (DXT) Installation
+### Desktop Extension (MCPB) Installation
 
 The easiest way to use this MCP server is as a Desktop Extension:
 
-1. **Download Extension**: Get the latest `.dxt` file from the [releases page](https://github.com/HeroSizy/cucumberstudio-mcp/releases) (automatically built from each release)
+1. **Download Extension**: Get the latest `.mcpb` file from the [releases page](https://github.com/HeroSizy/cucumberstudio-mcp/releases) (automatically built from each release)
 2. **Install Extension**: Import the extension in your compatible AI desktop application
 3. **Configure Credentials**: Set up your Cucumber Studio API credentials through the extension settings:
    - **Access Token**: Your Cucumber Studio API access token
@@ -187,7 +187,7 @@ npm run start:http
 ### Using with MCP Clients
 
 #### Desktop Extension (Recommended)
-Import the `.dxt` extension file directly into your compatible AI desktop application. The extension handles all configuration through its settings interface.
+Import the `.mcpb` extension file directly into your compatible AI desktop application. The extension handles all configuration through its settings interface.
 
 #### Manual MCP Configuration
 
@@ -326,19 +326,19 @@ npm run build
 npm run build:dev
 ```
 
-### DXT Extension Development
+### MCPB Extension Development
 ```bash
 # Validate manifest.json
-npm run dxt:validate
+npm run mcpb:validate
 
-# Build complete DXT extension for local testing (optimized production build)
-npm run dxt:build
+# Build complete MCPB extension for local testing (optimized production build)
+npm run mcpb:build
 
 # Check info about built extension
-npm run dxt:info
+npm run mcpb:info
 
 # Clean up build artifacts
-npm run dxt:clean
+npm run mcpb:clean
 ```
 
 ## Architecture
