@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.HeroSizy/cucumberstudio",
+  "description": "MCP server for Cucumber Studio API integration - access test scenarios, action words, and execution data",
+  "repository": {
+    "url": "https://github.com/HeroSizy/cucumberstudio-mcp",
+    "source": "github"
+  },
+  "version": "1.2.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "cucumberstudio-mcp",
+      "version": "1.2.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "environmentVariables": [
+    {
+      "name": "CUCUMBERSTUDIO_ACCESS_TOKEN",
+      "description": "Your Cucumber Studio API access token",
+      "required": true,
+      "sensitive": true
+    },
+    {
+      "name": "CUCUMBERSTUDIO_CLIENT_ID",
+      "description": "Your Cucumber Studio client ID",
+      "required": true
+    },
+    {
+      "name": "CUCUMBERSTUDIO_UID",
+      "description": "Your Cucumber Studio user ID",
+      "required": true
+    }
+  ]
+}
