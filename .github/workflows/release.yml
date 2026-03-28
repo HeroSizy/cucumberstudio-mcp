@@ -15,7 +15,7 @@ permissions:
   id-token: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   REGISTRY: docker.io
   IMAGE_NAME: herosizy/cucumberstudio-mcp
 
@@ -69,6 +69,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: npm ci
